@@ -1,4 +1,9 @@
 export const Fonts = {
     Headings: 'Ubuntu',
-    Regular: 'Alata'
+    // Headings: 'Roboto',
+    // Headings: 'OpenSans',
+    
+    // Regular: 'Alata',
+    // Regular: 'Roboto',
+    Regular: 'OpenSans',
 }
