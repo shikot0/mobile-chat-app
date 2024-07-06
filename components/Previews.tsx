@@ -1,4 +1,5 @@
-import { Pressable, StyleSheet, useColorScheme } from "react-native";
+import { Pressable, StyleSheet, TouchableHighlight, useColorScheme } from "react-native";
+import {TouchableOpacity} from 'react-native-gesture-handler';
 import { View, Text } from "./Themed";
 // import Image from 'expo-image';
 import { Image } from "react-native";
@@ -57,7 +58,7 @@ export function MessagePreview({preview}: MessagePreviewProps) {
         //     </Link>
         // </View>
         <Link href={`/${type}/${id}`} asChild>
-            <Pressable>
+            <Pressable android_ripple={{color: 'rgba(255, 255, 255, .25)', radius: 50, foreground: true, borderless: false}}>
                 <View style={[styles.messagePreview, {backgroundColor: Colors[colorScheme].elevated}]}>
                     <View style={styles.profilePictureWrapper}>
                         <Image style={styles.profilePicture} source={require('../assets/images/favicon.png')} resizeMode="cover"/>
@@ -69,6 +70,20 @@ export function MessagePreview({preview}: MessagePreviewProps) {
                 </View>
             </Pressable>
         </Link>
+        // <Link href={`/${type}/${id}`} asChild>
+        //     <TouchableOpacity>
+        //         <View style={[styles.messagePreview, {backgroundColor: Colors[colorScheme].elevated}]}>
+        //             <View style={styles.profilePictureWrapper}>
+        //                 <Image style={styles.profilePicture} source={require('../assets/images/favicon.png')} resizeMode="cover"/>
+        //             </View>
+        //             {/* <View style={[styles.messageTextWrapper, {backgroundColor: Colors[colorScheme].elevated}]}> */}
+        //             <View style={[styles.messageTextWrapper]}>
+        //                 <Text style={styles.username}>{username}</Text>
+        //                 <Text>{latestMessage}</Text>
+        //             </View>
+        //         </View>
+        //     </TouchableOpacity>
+        // </Link>
     )
 }
 
@@ -114,6 +129,7 @@ const styles = StyleSheet.create({
         flexGrow: 1,
         alignItems: 'flex-start',
         justifyContent: 'center',
+        backgroundColor: 'transparent',
         gap: 8,
     },
 })

@@ -51,6 +51,8 @@ const styles = StyleSheet.create({
     // justifyContent: 'center',
   },
   flatList: {
+    // borderRadius: 8,
+    // overflow: 'hidden',
     // borderWidth: 1,
     // borderStyle: 'solid',
     // borderColor: 'red'

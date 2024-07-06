@@ -40,6 +40,7 @@ export default function TabLayout() {
           title: 'Chats',
           headerShown: false,
           tabBarIcon: ({ color }) => <TabBarIcon name="chatbox-outline" color={color} />,
+          // tabBarIcon: ({ color, focused }) => <TabBarIcon name="chatbox-outline" color={focused ? 'red' : 'blue'} />,
           // headerRight: () => (
           //   <Link href="/modal" asChild>
           //     <Pressable>
@@ -61,6 +62,7 @@ export default function TabLayout() {
         options={{
           title: 'Settings',
           tabBarIcon: ({ color }) => <TabBarIcon name="settings-outline" color={color} />,
+          // tabBarIcon: ({ color, focused }) => <TabBarIcon name="settings-outline" color={color} />,
         }}
       />
     </Tabs>
