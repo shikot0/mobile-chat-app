@@ -1,5 +1,5 @@
 import { Image, Dimensions, StyleSheet, Pressable } from "react-native";
-import Animated, { withTiming, Easing, useAnimatedStyle, interpolate } from 'react-native-reanimated';
+import Animated, { withTiming, Easing, useAnimatedStyle, interpolate, useSharedValue } from 'react-native-reanimated';
 import {Text, View} from './Themed';
 import { Link } from "expo-router";
 
@@ -102,13 +102,22 @@ export function TextMessage({text, sender}: TextMessageProps) {
             style={[
                 styles.textMessageWrapper, 
                 {
+                    backgroundColor: sender === 'me' ? 'rgba(0, 175, 200, .5)' : 'rgba(255, 255, 255, .75)',
                     alignSelf: sender === 'me' ? "flex-end": 'flex-start'
                 }
             ]}
             // entering={SlideInRight}
             entering={textEnteringAnim}
         >
-            <Text>{text}</Text>
+            <Text
+                style={
+                    {
+                        color: sender === 'me' ? 'white' : 'black'
+                    }
+                }
+            >
+                {text}
+            </Text>
         </Animated.View>
     )
 }
@@ -195,16 +204,19 @@ export function ImageMessage({sender, imageLinks}: ImageMessageProps) {
                 >
                     {imageLinks.slice(0, 3).map((imageLink, index) => {
                         // console.log({index})
+                        // const rotateZ = useSharedValue(Math.random() * 20 - 10);
                         const randomizedIndex = getRandomIndex();
                         const animatedStyle = useAnimatedStyle(() => {
                             const inputRange = [0, 1, 2]
                             return {
                                 zIndex: interpolate(index, inputRange, [2, 1, 0], 'clamp'), 
+                                opacity: interpolate(index, inputRange, [1, .5, .25], 'clamp'),
                                 transform: [
                                     {
                                         // skewY: `${interpolate(index, inputRange, [0, 10, 20], 'clamp')}deg`
                                         // skewY: `${interpolate(index, inputRange, [0, 10, -20], 'clamp')}deg`
                                         skewY: `${interpolate(index, inputRange, [0, 7.5, -12.5], 'clamp')}deg`
+                                        // rotateZ: `${rotateZ.value}deg`
                                     }
                                 ]
                             }
@@ -237,7 +249,7 @@ const styles = StyleSheet.create({
     textMessageWrapper: {
         borderRadius: 20,
         maxWidth: '57.5%',
-        backgroundColor: 'rgba(0, 175, 200, .5)',
+        // backgroundColor: 'rgba(0, 175, 200, .5)',
         paddingVertical: 8,
         paddingHorizontal: 16,
         // borderWidth: 1,

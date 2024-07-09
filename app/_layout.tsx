@@ -89,7 +89,7 @@ function RootLayoutNav() {
         <Stack>
           <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
           {/* <Stack.Screen name="[chatType]/[id]" options={{ animation: 'ios'}} /> */}
-          <Stack.Screen name="[chatType]" options={{ animation: 'ios'}} />
+          <Stack.Screen name="[chatType]" options={{ animation: 'ios', headerShown: false}} />
           {/* <Stack.Screen name="modal" options={{ presentation: 'modal' }} /> */}
           <Stack.Screen name="modal" options={{ gestureEnabled: true, presentation: 'modal' }} />
         </Stack>

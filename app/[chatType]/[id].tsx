@@ -164,8 +164,8 @@ export default function ChatPage() {
     return (
         <View style={styles.container}>
             <Stack.Screen options={{ title: id }} />
-            {/* <View style={styles.chatWrapper}> */}
-            <KeyboardAvoidingView style={styles.chatWrapper}>
+            <View style={styles.chatWrapper}>
+            {/* <KeyboardAvoidingView style={styles.chatWrapper}> */}
                 <FlatList 
                     data={messages}
                     style={styles.messagesWrapper} 
@@ -203,8 +203,9 @@ export default function ChatPage() {
                         ) 
                     })}
                 </ScrollView> */}
-            {/* </View> */}
-            </KeyboardAvoidingView>
+            </View>
+            {/* </KeyboardAvoidingView> */}
+            
             {/* <View style={styles.messageInputWrapper}>
                 <TextInput cursorColor={'grey'} value={newMessage} style={[styles.textInput, {color: Colors[colorScheme].text, backgroundColor: Colors[colorScheme].elevated}]} onChangeText={text => handleUpdateNewMessage(text)}/>
                 <Pressable disabled={newMessage.length === 0} style={[styles.sendButton, {backgroundColor: newMessage.length === 0 ? Colors[colorScheme].elevated : 'lightblue'}]} onPress={() => addNewMessage()}>

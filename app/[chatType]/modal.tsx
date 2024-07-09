@@ -1,6 +1,7 @@
 import {View, Text} from '@/components/Themed';
 import { useRouter } from 'expo-router';
 import { Pressable, StyleSheet } from 'react-native';
+import {BlurView} from 'expo-blur'
 
 export default function Modal() {
 
@@ -10,7 +11,11 @@ export default function Modal() {
     }
 
     return (
+        // <Pressable onPress={handleGoBack} style={styles.container}>
         <Pressable onPress={handleGoBack} style={styles.container}>
+            <View style={styles.numOfImagesWrapper}>
+                <Text style={styles.numOfImages}>6/10</Text>
+            </View>
             <Text>This is a test</Text>
         </Pressable>
     )
@@ -18,7 +23,18 @@ export default function Modal() {
 
 const styles = StyleSheet.create({
     container: {
+        position: 'relative',
         flex: 1,
-        backgroundColor: 'rgba(255, 255, 255, .25)'
+        alignItems: 'center',
+        justifyContent: 'center',
+        backgroundColor: 'rgba(0, 0, 0, .4)'
+    },
+    numOfImagesWrapper: {
+        position: 'absolute',
+        top: 36,
+        right: 48,
+    },
+    numOfImages: {
+        fontSize: 20
     }
 })
