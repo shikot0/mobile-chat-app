@@ -1,12 +1,14 @@
 import React from 'react';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
 import Ionicons from '@expo/vector-icons/Ionicons'
-import { Link, Tabs } from 'expo-router';
+import { Link, Redirect, Tabs, useRouter } from 'expo-router';
 import { Pressable } from 'react-native';
 
 import Colors from '@/constants/Colors';
 import { useColorScheme } from '@/components/useColorScheme';
 import { useClientOnlyValue } from '@/components/useClientOnlyValue';
+import { localUserStore } from '@/constants/globalState';
+import {useEffect} from 'react';
 
 // You can explore the built-in icon families and icons on the web at https://icons.expo.fyi/
 // function TabBarIcon(props: {
@@ -24,6 +26,9 @@ function TabBarIcon(props: {
 
 export default function TabLayout() {
   const colorScheme = useColorScheme();
+  const {isLoading, isLoggedIn} = localUserStore();
+  const router = useRouter();
+
 
   return (
     <Tabs
@@ -31,10 +36,11 @@ export default function TabLayout() {
         tabBarActiveTintColor: Colors[colorScheme ?? 'light'].tint,
         // Disable the static render of the header on web
         // to prevent a hydration error in React Navigation v6.
-        headerShown: useClientOnlyValue(false, true),
+        // headerShown: useClientOnlyValue(false, false),
+        headerShown: false,
       }}>
       <Tabs.Screen
-        name="chats/index"
+        name="index"
         // name="(chats)"
         options={{
           title: 'Chats',

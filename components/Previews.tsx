@@ -58,7 +58,9 @@ export function MessagePreview({preview}: MessagePreviewProps) {
         //     </Link>
         // </View>
         <Link href={`/${type}/${id}`} asChild>
-            <Pressable android_ripple={{color: 'rgba(255, 255, 255, .25)', radius: 50, foreground: true, borderless: false}}>
+            {/* <Pressable android_ripple={{color: 'rgba(255, 255, 255, .25)', radius: 50, foreground: true, borderless: false}}> */}
+            {/* <Pressable android_ripple={{color: 'rgba(255, 255, 255, .25)', radius: 100, foreground: true, borderless: false}}> */}
+            <Pressable android_ripple={{color: 'black', foreground: true, borderless: false}}>
                 <View style={[styles.messagePreview, {backgroundColor: Colors[colorScheme].elevated}]}>
                     <View style={styles.profilePictureWrapper}>
                         <Image style={styles.profilePicture} source={require('../assets/images/favicon.png')} resizeMode="cover"/>

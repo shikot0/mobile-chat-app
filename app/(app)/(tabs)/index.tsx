@@ -3,6 +3,7 @@ import { FlatList, StyleSheet } from 'react-native';
 import { Text, View } from '@/components/Themed';
 import { ListHeading } from '@/components/StyledText';
 import { MessagePreview } from '@/components/Previews';
+import { useEffect } from 'react';
 
 export default function MessagesScreen() {
   const messages = [
@@ -25,6 +26,20 @@ export default function MessagesScreen() {
       latestMessage: 'Hi how are you?'
     }
   ]
+
+  // useEffect(() => {
+  //   fetch('http://192.168.35.241:3000/messages/conversations')
+  //   .then(res => res.json())
+  //   .then(data => {
+  //     console.log({firstElem: data[0]})
+  //   })
+  //   .catch(error => {
+  //     console.log(`Error: ${error}`)
+  //   })
+
+  //   // console.log({data})
+  // }, [])
+
   return (
     <View style={styles.container}>
       {/* <Text style={styles.title}>Tab One</Text>

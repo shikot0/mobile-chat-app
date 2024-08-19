@@ -9,6 +9,9 @@ export default {
     elevated: '#111',
     tint: tintColorLight,
     tabIconDefault: '#ccc',
+    borderColor: 'grey',
+    primary: 'lightgreen',
+    primaryButtonText: 'rgba(0, 0, 0, .75)',
     tabIconSelected: tintColorLight,
   },
   dark: {
@@ -18,6 +21,9 @@ export default {
     elevated: '#222',
     tint: tintColorDark,
     tabIconDefault: '#ccc',
+    borderColor: 'rgba(255, 255, 255, .25)',
+    primary: 'lightgreen',
+    primaryButtonText: 'rgb(50, 50, 50)',
     tabIconSelected: tintColorDark,
   },
 };

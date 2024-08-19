@@ -39,7 +39,8 @@
           "savePhotosPermission": "Allow chat app to save photos to your device",
           "isAccessMediaLocationEnabled": true
         }
-      ]
+      ],
+      "expo-secure-store"
     ],
     "experiments": {
       "typedRoutes": true

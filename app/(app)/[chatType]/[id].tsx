@@ -9,6 +9,8 @@ import { StyleSheet, Image, TextInput, Pressable, FlatList, NativeSyntheticEvent
 import Colors from "@/constants/Colors";
 import { MessageInput } from "@/components/Inputs";
 import { MessageHandler } from "@/components/MessageComponents";
+import {LinearGradient} from 'expo-linear-gradient';
+import {FlashList} from '@shopify/flash-list';
 
 // interface ChatPageProps {
 //     params: {
@@ -73,11 +75,12 @@ export default function ChatPage() {
         }
     ])
                         
-    let flatListRef: FlatList<any> | null = null;
+    // let flatListRef: FlatList<any> | null = null;
+    let flashListRef: FlashList<any> | null = null;
 
     async function playSound() {
         const playSound = new Audio.Sound()
-        await playSound.loadAsync(require('../../assets/sounds/new-message.m4a'));
+        await playSound.loadAsync(require('../../../assets/sounds/new-message.m4a'));
         await playSound.playAsync()       
     }
 
@@ -166,20 +169,49 @@ export default function ChatPage() {
             <Stack.Screen options={{ title: id }} />
             <View style={styles.chatWrapper}>
             {/* <KeyboardAvoidingView style={styles.chatWrapper}> */}
-                <FlatList 
-                    data={messages}
-                    style={styles.messagesWrapper} 
-                    contentContainerStyle={{padding: 8, gap: 8}}
-                    ref={(ref) => {
-                        flatListRef = ref;
-                    }}
-                    renderItem={({item, index}) => {
-                        return (
-                            <MessageHandler message={item} />
-                        )
-                    }}
+                {/* <LinearGradient
+                    colors={['rgba(0, 0, 0, .25)', 'transparent', 'rgba(0, 0, 0, .25)']}
+                    style={{position: 'absolute', top: 0, left: 0, height: '100%'}}
+                > */}
+                <LinearGradient
+                    // colors={['rgba(0, 0, 0, .25)', 'transparent', 'rgba(0, 0, 0, .25)']}
+                    // colors={['rgba(0, 0, 0, .25)', 'transparent', 'rgba(0, 0, 0, .25)']}
+                    colors={['rgba(0, 0, 0, .15)', 'transparent', 'rgba(0, 0, 0, .15)']}
+                    // colors={['red', 'transparent', 'red']}
+                    style={styles.linearGradient}
                 />
+                    {/* <FlatList 
+                        data={messages}
+                        style={styles.messagesWrapper} 
+                        contentContainerStyle={{padding: 8, gap: 8}}
+                        ref={(ref) => {
+                            flatListRef = ref;
+                        }}
+                        renderItem={({item, index}) => {
+                            return (
+                                <MessageHandler message={item} />
+                            )
+                        }}
+                    /> */}
 
+                    <FlashList 
+                        data={messages}
+                        // style={styles.messagesWrapper} 
+                        // contentContainerStyle={{padding: 8, gap: 8}}
+                        contentContainerStyle={{padding: 8}}
+                        // estimatedItemSize={messages.length}
+                        ref={(ref) => {
+                            flashListRef = ref;
+                        }}
+                        initialScrollIndex={messages.length-1}
+                        estimatedItemSize={91}
+                        renderItem={({item, index}) => {
+                            return (
+                                <MessageHandler message={item} />
+                            )
+                        }}
+                    />
+                {/* </LinearGradient> */}
                 {/* <ScrollView
                     style={styles.messagesWrapper} 
                     contentContainerStyle={{flex: 1, padding: 8, gap: 8}}
@@ -229,13 +261,26 @@ const styles = StyleSheet.create({
     },
     chatWrapper: {
         flex: 12,
+        justifyContent: 'flex-end',
+        position: 'relative',
         // borderWidth: 1,
         // borderColor: 'red',
         // borderStyle: 'solid'
     },
+    linearGradient: {
+        position: 'absolute',
+        pointerEvents: 'none',
+        zIndex: 5,
+        top: 0,
+        left: 0,
+        right: 0,
+        height: '100%'
+    },
     messagesWrapper: {
-        flex: 1,
+        // flex: 1,
+        flexGrow: 0,
         position: 'relative',
+        // justifyContent: 'flex-end',
         // borderWidth: 1,
         // borderColor: 'red',
         // borderStyle: 'solid'

@@ -1,18 +1,21 @@
 import FontAwesome from '@expo/vector-icons/FontAwesome';
 import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
 import { useFonts } from 'expo-font';
-import { Redirect, Stack } from 'expo-router';
+// import { Stack } from 'expo-router';
+import { Stack } from 'expo-router/stack';
 import * as SplashScreen from 'expo-splash-screen';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import * as SQLite from 'expo-sqlite';
 import migrations from '../drizzle/migrations/migrations';
-
+import { localUserStore } from '@/constants/globalState';
 import { useColorScheme } from '@/components/useColorScheme';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 // import { db } from '@/drizzle/db';
+import * as SecureStore from 'expo-secure-store';
 import {useMigrations} from 'drizzle-orm/expo-sqlite/migrator';
 import { messages } from '@/drizzle/schema';
 import { drizzle } from 'drizzle-orm/expo-sqlite';
+import { Redirect, Slot } from 'expo-router';
 
 const expoDb = SQLite.openDatabaseSync('app.db');
 const db = drizzle(expoDb)
@@ -22,10 +25,10 @@ export {
   ErrorBoundary,
 } from 'expo-router';
 
-export const unstable_settings = {
-  // Ensure that reloading on `/modal` keeps a back button present.
-  initialRouteName: '(tabs)',
-};
+// export const unstable_settings = {
+//   // Ensure that reloading on `/modal` keeps a back button present.
+//   initialRouteName: '(tabs)',
+// };
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
@@ -39,6 +42,7 @@ export default function RootLayout() {
     ...FontAwesome.font,
   });
   const {success, error} = useMigrations(db, migrations);
+  const {isLoggedIn, setIsLoggedIn, setIsLoading, isLoading, userToken, setUserToken} = localUserStore();
 
 
   // async function test() {
@@ -60,17 +64,60 @@ export default function RootLayout() {
   }, [error])
 
   useEffect(() => {
-    if (fontsLoaded && success) {
-      SplashScreen.hideAsync();
+    const savedToken = SecureStore.getItem('user-token')
+
+    console.log({savedToken})
+    if(savedToken) {
+      setTimeout(() => {
+        setIsLoading(false),
+        setIsLoggedIn(true),
+        setUserToken(savedToken)
+      }, 10000)
+    }else {
+      setIsLoggedIn(false);
+      setIsLoading(false)
     }
-  }, [fontsLoaded, success]);
-      
+  }, [])
 
   // useEffect(() => {
   //   if (fontsLoaded) {
   //     SplashScreen.hideAsync();
   //   }
   // }, [fontsLoaded]);
+
+  // useEffect(() => {
+  //   if (fontsLoaded && success) {
+  //     SplashScreen.hideAsync();
+  //   }
+  // }, [fontsLoaded, success]);
+
+  // useEffect(() => {
+  //   if (fontsLoaded && success && !isLoading) {
+  //     console.log({msg: 'in useEffect', isLoggedIn, isLoading})
+  //     SplashScreen.hideAsync();
+  //   }
+  // }, [fontsLoaded, success, isLoading]);
+
+  useEffect(() => {
+    if (fontsLoaded && success && !isLoading) {
+      SplashScreen.hideAsync();
+    }
+  }, [fontsLoaded, success, isLoading]);
+      
+  // const onLayoutRootView = useCallback(async () => {
+  //   if (fontsLoaded && success && !isLoading) {
+  //     // This tells the splash screen to hide immediately! If we call this after
+  //     // `setAppIsReady`, then we may see a blank screen while the app is
+  //     // loading its initial state and rendering its first pixels. So instead,
+  //     // we hide the splash screen once we know the root view has already
+  //     // performed layout.
+  //     await SplashScreen.hideAsync();
+  //   }
+  // }, [fontsLoaded, success, isLoading]);
+
+  // if(isLoggedIn === false) {
+  //   return <Redirect href="register" />
+  // }
 
   if (!fontsLoaded) {
     return null;
@@ -81,18 +128,30 @@ export default function RootLayout() {
 
 function RootLayoutNav() {
   const colorScheme = useColorScheme();
-
+  // const {isLoggedIn} = localUserStore();
+  // console.log({isLoggedIn})
   return (
     <GestureHandlerRootView style={{flex: 1}}>
       <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-        {/* <Redirect href={'./(tabs)/chats'}/> */}
-        <Stack>
+        {/* <Stack>
           <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-          {/* <Stack.Screen name="[chatType]/[id]" options={{ animation: 'ios'}} /> */}
           <Stack.Screen name="[chatType]" options={{ animation: 'ios', headerShown: false}} />
-          {/* <Stack.Screen name="modal" options={{ presentation: 'modal' }} /> */}
           <Stack.Screen name="modal" options={{ gestureEnabled: true, presentation: 'modal' }} />
-        </Stack>
+        </Stack> */}
+        {/* <Redirect href={'./(tabs)/chats'}/> */}
+        {/* <Stack initialRouteName={isLoggedIn ? '(tabs)' : 'register'} screenOptions={{headerShown: false}}> */}
+        {/* <Stack screenOptions={{headerShown: false}}>
+          {isLoggedIn ?
+            <>
+              <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+              <Stack.Screen name="modal" options={{ gestureEnabled: true, presentation: 'modal' }} />
+              <Stack.Screen name="[chatType]" options={{ animation: 'ios', headerShown: false}} />
+            </>
+          :
+            <Stack.Screen name="register" options={{headerShown: false}} />
+          }
+        </Stack> */}
+        <Slot />
       </ThemeProvider>
     </GestureHandlerRootView>
   );

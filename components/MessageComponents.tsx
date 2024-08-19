@@ -1,7 +1,14 @@
-import { Image, Dimensions, StyleSheet, Pressable } from "react-native";
-import Animated, { withTiming, Easing, useAnimatedStyle, interpolate, useSharedValue } from 'react-native-reanimated';
-import {Text, View} from './Themed';
+// import { Image, Dimensions, StyleSheet, Pressable } from "react-native";
+import { Dimensions, StyleSheet, Pressable } from "react-native";
+import {Image} from 'expo-image'
+import Animated, { withTiming, Easing, useAnimatedStyle, interpolate, useSharedValue, SharedValue } from 'react-native-reanimated';
 import { Link } from "expo-router";
+// import Swipeable from "react-native-gesture-handler/ReanimatedSwipeable";
+import {Text, View} from './Themed';
+// import Ionicons from "@expo/vector-icons/Ionicons";
+import Swipeable from 'react-native-gesture-handler/Swipeable'
+import AntDesign from "@expo/vector-icons/AntDesign";
+import { useEffect } from "react";
 
 const {width, height} = Dimensions.get('window');
 const animationDuration = 300;
@@ -97,39 +104,125 @@ export function TextMessage({text, sender}: TextMessageProps) {
         }
     }
 
+    // const AnimatedSwipeable = Animated.createAnimatedComponent(Swipeable);
+
+
     return (
-        <Animated.View
-            style={[
-                styles.textMessageWrapper, 
-                {
-                    backgroundColor: sender === 'me' ? 'rgba(0, 175, 200, .5)' : 'rgba(255, 255, 255, .75)',
-                    alignSelf: sender === 'me' ? "flex-end": 'flex-start'
-                }
-            ]}
+        // <Animated.View
+        //     style={[
+        //         styles.textMessageWrapper, 
+        //         {
+        //             backgroundColor: sender === 'me' ? 'rgba(0, 175, 200, .5)' : 'rgba(255, 255, 255, .75)',
+        //             alignSelf: sender === 'me' ? "flex-end": 'flex-start'
+        //         }
+        //     ]}
+        //     // entering={SlideInRight}
+        //     entering={textEnteringAnim}
+        // >
+        //     <Text
+        //         style={
+        //             {
+        //                 color: sender === 'me' ? 'white' : 'black'
+        //             }
+        //         }
+        //     >
+        //         {text}
+        //     </Text>
+        // </Animated.View>
+
+        <Swipeable
             // entering={SlideInRight}
-            entering={textEnteringAnim}
+            // entering={textEnteringAnim}
+            overshootFriction={8}
+            overshootLeft={false}
+            
+            renderRightActions={(progress, dragX) => {
+            // renderLeftActions={(progress: SharedValue<number>, dragX: SharedValue<number>) => {
+                const AnimatedIcon = Animated.createAnimatedComponent(AntDesign);
+                // const animatedStyle = useAnimatedStyle(() => {
+                //     const opacity = interpolate(progress, [0, 1], [0, 1], 'clamp')
+                // })
+                // const opacity = progress.interpolate({
+                //     inputRange: [0, 1],
+                //     outputRange: [0, 1],
+                //     extrapolate: "clamp"
+                // })
+                // let opacity = dragX.interpolate({
+                //     inputRange: [0, 25],
+                //     outputRange: [0, 1],
+                // })
+                // const opacity = interpolate(dragX.removeListener, [0, 25], [0, 1], 'clamp')
+                // console.log({opacity})
+                // useEffect(() => {
+                //     console.log({opacity})
+                // }, [opacity])
+
+                // drag.interpolate({
+                //     inputRange: []
+                // })
+
+                // const animatedStyle = useAnimatedStyle(() => {
+                //     return {
+                //         opacity: progress.
+                //     }
+                // })
+
+                return (
+                    // <View><Text>test</Text></View>
+                    <View
+                        style={[
+                            {
+                                width: 50,
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                // borderStyle: 'solid',
+                                // borderWidth: 1,
+                                // borderColor: 'white'
+                                // opacity: progress
+                            },
+                            // {
+                            //     opacity: opacity
+                            // }
+                            // animatedStyle
+                        ]}
+                    >
+                        <AnimatedIcon name="arrowleft" color="white" size={25}/>
+                    </View>
+                )
+            }}
         >
-            <Text
-                style={
+            <View             
+                style={[
+                    styles.textMessageWrapper, 
                     {
-                        color: sender === 'me' ? 'white' : 'black'
+                        backgroundColor: sender === 'me' ? 'rgba(0, 175, 200, .5)' : 'rgba(255, 255, 255, .75)',
+                        alignSelf: sender === 'me' ? "flex-end": 'flex-start'
                     }
-                }
+                ]}
             >
-                {text}
-            </Text>
-        </Animated.View>
+
+                <Text
+                    style={
+                        {
+                            color: sender === 'me' ? 'white' : 'black'
+                        }
+                    }
+                >
+                    {text}
+                </Text>
+            </View>
+        </Swipeable>
     )
 }
 
 export function ImageMessage({sender, imageLinks}: ImageMessageProps) {
     const images = [require(`../assets/testImages/test_image_1.jpg`), require(`../assets/testImages/test_image_2.jpg`), require(`../assets/testImages/test_image_3.jpg`), require(`../assets/testImages/test_image_4.jpg`), require(`../assets/testImages/test_image_5.jpg`), require(`../assets/testImages/test_image_6.jpg`), require(`../assets/testImages/test_image_7.jpg`), require(`../assets/testImages/test_image_8.jpg`), require(`../assets/testImages/test_image_9.jpg`), require(`../assets/testImages/test_image_10.jpg`)]
     const selectedIndexes: number[] = [];
-    function getRandomIndex() {
+    function getRandomIndex(arr: any[]) {
         // return images[Math.floor(Math.random() * images.length-1)];
-        let index = Math.floor(Math.random() * images.length);
+        let index = Math.floor(Math.random() * arr.length);
         while(selectedIndexes.includes(index)) {
-            index = Math.floor(Math.random() * images.length);
+            index = Math.floor(Math.random() * arr.length);
         }
         // if(!selectedIndexes.includes(index)) return index;
         // return Math.floor(Math.random() * images.length);
@@ -205,7 +298,7 @@ export function ImageMessage({sender, imageLinks}: ImageMessageProps) {
                     {imageLinks.slice(0, 3).map((imageLink, index) => {
                         // console.log({index})
                         // const rotateZ = useSharedValue(Math.random() * 20 - 10);
-                        const randomizedIndex = getRandomIndex();
+                        const randomizedIndex = getRandomIndex(images);
                         const animatedStyle = useAnimatedStyle(() => {
                             const inputRange = [0, 1, 2]
                             return {
@@ -225,6 +318,7 @@ export function ImageMessage({sender, imageLinks}: ImageMessageProps) {
                             <Animated.View 
                                 key={index.toString()}
                                 style={[styles.imageWrapper, animatedStyle]}
+                                // sharedTransitionTag={index < 3 ? `image-${index}` : 'undefined'}
                             >
                                 <Image
                                     style={styles.imageMessage} 
@@ -249,9 +343,11 @@ const styles = StyleSheet.create({
     textMessageWrapper: {
         borderRadius: 20,
         maxWidth: '57.5%',
+        // width: '100%',
         // backgroundColor: 'rgba(0, 175, 200, .5)',
         paddingVertical: 8,
         paddingHorizontal: 16,
+        
         // borderWidth: 1,
         // borderStyle: 'solid',
         // borderColor: 'red'
@@ -285,6 +381,10 @@ const styles = StyleSheet.create({
         overflow: 'hidden',
         // aspectRatio: 1/1.25,
         borderRadius: 16,
+        borderStyle: 'solid',
+        borderColor: 'rgba(255, 255, 255, .25)',
+        // borderColor: 'rgba(0, 0, 0, .25)',
+        borderWidth: 1,
         // borderWidth: 1,
         // borderStyle: 'solid',
         // borderColor: 'red',
