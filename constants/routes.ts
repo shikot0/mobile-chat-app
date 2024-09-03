@@ -1,0 +1,1 @@
+export const serverRoute = process.env.SERVER_ROUTE

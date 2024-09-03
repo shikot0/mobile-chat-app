@@ -1,7 +1,7 @@
 import {useEffect} from 'react';
 import { localUserStore } from '@/constants/globalState';
 import {Redirect, SplashScreen, Stack, useRouter} from 'expo-router';
-import {Text} from '@/components/Themed';
+import {Text, View} from '@/components/Themed';
 
 SplashScreen.preventAutoHideAsync()
 
@@ -22,26 +22,42 @@ export default function Layout() {
     //     }
     // }, [isLoading, isLoggedIn])
 
+    // useEffect(() => {
+    //   console.log({isLoading, isLoggedIn, msg: 'Layout page'})
+    // }, [isLoading, isLoggedIn])
+
     if(isLoading) {
-        return <Text>Loading...</Text>
+        // return <Text>Loading...</Text>
+        // console.log('Loading...')
+        return (
+          <View>
+            <Text>Loading...</Text>
+          </View>
+        )
         // SplashScreen.hideAsync()
     }
     if(!isLoggedIn) {
         // return <Redirect href="../register" />
         //   router.navigate('/register'); 
-      return <Redirect href="/sign-in" />;
+      // console.log('test')
+      // console.log('replacing')
+      // return <Redirect href={"../../register"} />;
+      return <Redirect href={".."}/>;
+      // router.replace("/register")
     }
     // useEffect(() => {
     // }, [isLoading, isLoggedIn])
     return (
-        <Stack screenOptions={{headerShown: false}}>
+        // <Stack screenOptions={{headerShown: false}}>
+        <Stack>
           {/* <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
           <Stack.Screen name="[chatType]" options={{ animation: 'ios', headerShown: false}} />
           <Stack.Screen name="modal" options={{ gestureEnabled: true, presentation: 'modal' }} />   */}
           {/* <Stack.Screen name="register" options={{headerShown: false}} /> */}
-            <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-            <Stack.Screen name="modal" options={{ gestureEnabled: true, presentation: 'modal' }} />
-            <Stack.Screen name="[chatType]" options={{ animation: 'ios', headerShown: false}} />
+          <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+          <Stack.Screen name="modal" options={{ gestureEnabled: true, presentation: 'modal' }} />
+          <Stack.Screen name="new-chat" options={{presentation: 'modal', title:"New chat", animation: 'fade_from_bottom', fullScreenGestureEnabled: true, gestureEnabled: true,}}/>
+          <Stack.Screen name="[chatType]" options={{ animation: 'ios', headerShown: false}} />
         </Stack>
     )
 }

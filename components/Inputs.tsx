@@ -6,25 +6,38 @@ import {View as DefaultView} from 'react-native';
 import {useState} from 'react';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import * as ImagePicker from 'expo-image-picker';
+// import {} from 'expo-file-system'
+// import {} from 'expo-media-library'
 import { Image } from 'expo-image';
+import AntDesign from '@expo/vector-icons/AntDesign';
 
 
 
 interface TextInputProps extends OriginalTextInputProps {
     value: string,
     updateFunction: Function,
-    placeholder?: string
+    placeholder?: string,
+    trimWhitespace?: boolean
 }
 
-export function TextInput({value, updateFunction, placeholder, ...props}: TextInputProps) {
+
+export function TextInput({value, updateFunction, trimWhitespace, placeholder, ...props}: TextInputProps) {
     const colorScheme = useColorScheme() ?? 'light';
     return (
         <OriginalTextInput 
             value={value} 
-            onChangeText={text => updateFunction(text)}
+            onChangeText={text => {
+                console.log({text})
+                if(trimWhitespace) {
+                    updateFunction(text.trim())
+                }else {
+                    updateFunction(text)
+                }
+                // updateFunction(trimWhitespace ? text.trim() : text)
+            }}
             cursorColor={'grey'} 
             placeholder={placeholder}
-            placeholderTextColor={'rgba(255, 255, 255, .75)w'}
+            placeholderTextColor={'rgba(255, 255, 255, .75)'}
             style={[
                 styles.textInput, 
                 {
@@ -33,7 +46,36 @@ export function TextInput({value, updateFunction, placeholder, ...props}: TextIn
                 },
                 props.style
             ]}
+
+            {...props}
         />
+    )
+}
+
+export function EmailInput({value, updateFunction, trimWhitespace = true, placeholder, ...props}: TextInputProps) {
+    return <TextInput value={value} updateFunction={updateFunction} trimWhitespace={trimWhitespace} placeholder={placeholder} keyboardType='email-address' autoCapitalize={'none'} autoCorrect={false} {...props}/>
+}
+
+interface PasswordInputProps extends TextInputProps {
+    passwordVisible?: boolean
+}
+
+export function PasswordInput({value, updateFunction, placeholder, trimWhitespace, passwordVisible, ...props}: PasswordInputProps) {
+    // return <TextInput value={value} updateFunction={updateFunction} trimWhitespace={trimWhitespace} placeholder={placeholder} autoCapitalize={'none'} secureTextEntry={!passwordVisible} autoCorrect={false} {...props}/>
+    const [isPasswordVisible, setIsPasswordVisible] = useState<boolean>(passwordVisible ?? false);
+
+    return (
+        <View style={styles.passwordInputWrapper}>
+            {/* <TextInput value={value} updateFunction={updateFunction} trimWhitespace={trimWhitespace} placeholder={placeholder} autoCapitalize={'none'} secureTextEntry={!passwordVisible} autoCorrect={false} {...props}/> */}
+            <TextInput value={value} updateFunction={updateFunction} trimWhitespace={trimWhitespace} placeholder={placeholder} autoCapitalize={'none'} secureTextEntry={!isPasswordVisible} autoCorrect={false} {...props}/>
+            <Pressable
+                style={styles.passwordVisibleButtonWrapper}
+                onPress={() => setIsPasswordVisible(prev => !prev)}
+                android_ripple={{color: 'rgba(0, 0, 0, .25)', foreground: true, borderless: false}}
+            >
+                <AntDesign name="eye" size={16} color={'white'}/>
+            </Pressable>
+        </View>
     )
 }
 
@@ -75,13 +117,15 @@ export function MessageInput({value, updateFunction, submitFunction, submitDisab
 }
 
 interface ImageInputProps {
+    image: ImagePicker.ImagePickerAsset | undefined, 
+    setter: Function,
     circular?: boolean,
     size?: number,
 }
 
-export function ImageInput({circular, size}: ImageInputProps) {
+export function ImageInput({image, setter, circular, size}: ImageInputProps) {
     // const [image, setImage] = useState<ImagePicker.ImagePickerAsset>(); 
-    const [image, setImage] = useState<string>(); 
+    // const [image, setImage] = useState<string>(); 
     const theme = useColorScheme() ?? 'dark';
     // const [permissionResponse, requestPermission] = ImagePicker.getMediaLibraryPermissionsAsync();
 
@@ -94,10 +138,13 @@ export function ImageInput({circular, size}: ImageInputProps) {
         // };
 
         // const {assets, canceled} = await ImagePicker.launchImageLibraryAsync({mediaTypes: MediaTypeOptions.Images})
+        const testImage = new FormData();
         const {assets, canceled} = await ImagePicker.launchImageLibraryAsync({allowsEditing: true, mediaTypes: ImagePicker.MediaTypeOptions.Images})
-        if(canceled) return;
-        setImage(assets[0].uri)
-        console.log({assets})
+        if(canceled || assets.length === 0) return;
+        console.log({file: assets[0]})
+        // setImage(assets[0].uri)
+        setter(assets[0])
+        // console.log({assets})
     }
 
 
@@ -130,7 +177,8 @@ export function ImageInput({circular, size}: ImageInputProps) {
             ]}
         >
             {image ?
-                <Image style={styles.imageInput} source={{uri: image}} />
+                // <Image style={styles.imageInput} source={{uri: image}} />
+                <Image style={styles.imageInput} source={{uri: image?.uri}} />
             : 
                 // <Ionicons name="camera" size={width ? width / 2 : 50} color="red" />
                 <Ionicons name="camera-outline" size={size ? size / 2.5 : 70} color={Colors[theme].borderColor} />
@@ -169,5 +217,30 @@ const styles = StyleSheet.create({
     imageInput: {
         width: '100%',
         height: '100%'
+    },
+    passwordInputWrapper: {
+        // flex: 1,
+        width: '100%',
+        position: 'relative',
+        backgroundColor: 'transparent',
+        // borderStyle: 'solid',
+        // borderColor: 'red',
+        // borderWidth: 1,
+    },
+    passwordVisibleButtonWrapper: {
+        position: 'absolute',
+        width: 40,
+        height: 40,
+        top: '50%',
+        right: 0,
+        transform: [
+            {
+                translateY: -20
+            }
+        ],
+        borderRadius: 40,
+        overflow: 'hidden',
+        alignItems: 'center',
+        justifyContent: 'center'
     }
 })

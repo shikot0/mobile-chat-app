@@ -42,7 +42,7 @@ export default function RootLayout() {
     ...FontAwesome.font,
   });
   const {success, error} = useMigrations(db, migrations);
-  const {isLoggedIn, setIsLoggedIn, setIsLoading, isLoading, userToken, setUserToken} = localUserStore();
+  const {isLoggedIn, setIsLoggedIn, setIsLoading, isLoading, userToken, setUserToken, setLocalUser} = localUserStore();
 
 
   // async function test() {
@@ -64,20 +64,31 @@ export default function RootLayout() {
   }, [error])
 
   useEffect(() => {
-    const savedToken = SecureStore.getItem('user-token')
+    const savedToken = SecureStore.getItem('user-token');
+    const localUser = SecureStore.getItem('local-user');
+    // const savedToken = undefined;
+    // const localUser = undefined;
 
-    console.log({savedToken})
-    if(savedToken) {
-      setTimeout(() => {
-        setIsLoading(false),
-        setIsLoggedIn(true),
-        setUserToken(savedToken)
-      }, 10000)
+    // console.log({savedToken, localUser})
+    // console.log({savedToken})
+    
+    if(savedToken && localUser) {
+      // setTimeout(() => {
+        setUserToken(savedToken);
+        setLocalUser(JSON.parse(localUser));
+        setIsLoggedIn(true);
+        // setIsLoading(false),
+        setIsLoading(false);
+      // }, 10000)
     }else {
       setIsLoggedIn(false);
       setIsLoading(false)
     }
   }, [])
+
+  useEffect(() => {
+    console.log({isLoggedIn})
+  }, [isLoggedIn])
 
   // useEffect(() => {
   //   if (fontsLoaded) {
@@ -129,7 +140,7 @@ export default function RootLayout() {
 function RootLayoutNav() {
   const colorScheme = useColorScheme();
   // const {isLoggedIn} = localUserStore();
-  // console.log({isLoggedIn})
+  // console.log({isLoggedIn}) 
   return (
     <GestureHandlerRootView style={{flex: 1}}>
       <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>

@@ -6,7 +6,7 @@ import {StyleSheet} from 'react-native';
 
 export default function IndexPage() {
     const {isLoading, isLoggedIn} = localUserStore();
-    console.log({isLoading, isLoggedIn})
+    // console.log({isLoading, isLoggedIn})
 
     if(isLoading) {
         return (
@@ -17,9 +17,9 @@ export default function IndexPage() {
     }
 
     if(isLoggedIn) {
-        return <Redirect href={"(app)/(tabs)"} />
+        return <Redirect href="./(app)" />
     }else {
-        return <Redirect href={"register"} />
+        return <Redirect href="./register" />
     }
 }
 

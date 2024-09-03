@@ -1,9 +1,12 @@
 import { PrimaryButton, SecondaryButton, Tooltip, TooltipTypes } from "@/components/Buttons";
-import { ImageInput, TextInput } from "@/components/Inputs";
+import { EmailInput, ImageInput, PasswordInput, TextInput } from "@/components/Inputs";
 import { Heading, SmallHeading } from "@/components/StyledText";
 import { Text, View } from "@/components/Themed";
 import Colors from "@/constants/Colors";
 import { localUserStore } from "@/constants/globalState";
+import { serverRoute } from "@/constants/routes";
+import { addLocalToken, addLocalUser } from "@/utils/saveToLocal";
+import { ImagePickerAsset } from "expo-image-picker";
 import { useRouter } from "expo-router";
 import { useState, useEffect } from "react";
 import {Dimensions, ScrollView, Pressable, StyleSheet, KeyboardAvoidingView, useColorScheme} from 'react-native';
@@ -21,24 +24,31 @@ export default function RegisterPage() {
     // const [signInEmail, setSignInEmail] = useState<string>('');
     // const [signInUsername, setSignInUsername] = useState<string>('');
     // const [signInNumber, setSignInNumber] = useState<string>('');
-    const [signInUsername, setSignInUsername] = useState<string>('Sheikh');
+    const [signInUsername, setSignInUsername] = useState<string>('');
     const [signInEmail, setSignInEmail] = useState<string>('');
     const [signInPassword, setSignInPassword] = useState<string>('');
     const [signInNumber, setSignInNumber] = useState<string>('');
-    const [logInUsername, setLogInUsername] = useState<string>('');
-    const [logInPassword, setLogInPassword] = useState<string>('');
+    const [profilePicture, setProfilePicture] = useState<ImagePickerAsset>();
+    // const [loginUsername, setLoginUsername] = useState<string>('');
+    const [loginEmail, setLoginEmail] = useState<string>('');
+    const [loginPassword, setLoginPassword] = useState<string>('');
     const [isLoading, setIsLoading] = useState<boolean>(false);
-    const translateX = useSharedValue(0)
-    const theme = useColorScheme() ?? 'dark';
-    const {setIsLoggedIn} = localUserStore();
+    const translateX = useSharedValue(0);
     const router = useRouter();
-    // const [signInDetails, setSignInDetails] = useState<SignInDetails>({
-    //     password: signInPassword,
-    //     email: signInEmail
-    // })
+    const isSignInDisabled = signInUsername === '' || signInEmail === '' || signInPassword === '' || signInNumber === '';
+    const isLoginDisabled = loginEmail === '' || loginPassword === '';
+    const {isLoggedIn, localUser, userToken, setIsLoggedIn, setLocalUser, setUserToken} = localUserStore();
+    const colorScheme = useColorScheme() ?? 'dark';
+
     const signInDetails = {
+        username: signInUsername,
         password: signInPassword,
+        phoneNumber: signInNumber,
         email: signInEmail
+    }
+    const loginDetails = {
+        email: loginEmail,
+        password: loginPassword,
     }
     
     const animationDuration = 500;
@@ -65,89 +75,98 @@ export default function RegisterPage() {
         })
     }
 
-    // async function handleSignIn() {
-    function handleSignIn() {
-        // try {
-        //     // console.log('initialized')
-        //     // setIsLoading(true);
-        //     // setIsLoggedIn(true);
-        //     // router.navigate('./(app)/(tabs)')
-        //     // setIsLoading(false);
-            
+    // useEffect(() => {
+    //     console.log('register page')
+    // }, [])
 
-        //     // setTimeout(() => {
-        //     //     setIsLoggedIn(true);
-        //     //     router.navigate('./(app)/(tabs)')
-        //     //     setIsLoading(false);
-        //     // }, 2000)
+    const route = "http://192.168.17.241:3000";
 
-        //     setIsLoading(true);
-
-        //     const response = await fetch('192.168.36.241:3000/auth/register', {
-        //         method: 'POST',
-        //         body: JSON.stringify({
-        //             password: signInPassword,
-        //             username: signInUsername,
-        //             email: signInEmail,
-        //             phoneNumber: signInNumber, 
-        //         })
-        //     })
-
-        //     const body = await response.json();
-
-        //     console.log({body})
-
-
-        //     setIsLoading(false);
-        // }catch(error) {
-        //     setIsLoading(false)
-        //     console.log(`Error: ${error}`)
-        // }
-
-        // console.log('initialized')
-        // setIsLoading(true);
-        // setIsLoggedIn(true);
-        // router.navigate('./(app)/(tabs)')
-        // setIsLoading(false);
-        
-        // setTimeout(() => {
-        //     setIsLoggedIn(true);
-        //     router.navigate('./(app)/(tabs)')
-        //     setIsLoading(false);
-        // }, 2000)
-        setIsLoading(true);
-        fetch('192.168.36.146:3000/auth/register', {
-            method: 'POST',
-            body: JSON.stringify({
-                password: signInPassword,
-                username: signInUsername,
-                email: signInEmail,
-                phoneNumber: signInNumber, 
+    // console.log({serverRoute})
+    async function handleSignIn() {  
+        try {
+            setIsLoading(true);
+            console.log('started')
+            // const response = await fetch('http://192.168.34.241:3000/auth/register', {
+            const response = await fetch(`${route}/auth/register`, {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify(signInDetails)
             })
-        }).then(response => response.json())
-        .then(body => console.log({body}))
-        .catch(error => console.log(`Error: ${error}`))
+            const body = await response.json();
+            console.log({body})
+            const {succeeded} = body;
+            if(succeeded) {
+                const {user, token} = body;
 
-        setIsLoading(false);
+                setLocalUser(user);
+                setUserToken(token);
+                setIsLoggedIn(true);
+
+                addLocalUser(user);
+                addLocalToken(token);
+                router.navigate('./(app)')
+                // console.log({isLoggedIn, localUser, userToken});
+            }
+
+            setIsLoading(false);
+        } catch(error) {
+            setIsLoading(false);
+            console.log(`Sign up error: ${error}`)
+        }
     }
 
-    // setIsLoading(false)
+    async function handleLogin() {
+        try {
+            setIsLoading(true);
+
+            const response = await fetch(`${route}/auth/log-in`, {
+                method: 'PATCH',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify(loginDetails)
+            })
+
+            const body = await response.json();
+
+
+            console.log({body})
+            const {succeeded} = body;
+            if(succeeded) {
+                const {user, token} = body;
+
+                setLocalUser(user);
+                setUserToken(token);
+                setIsLoggedIn(true);
+
+                addLocalUser(user);
+                addLocalToken(token);
+                router.navigate('./(app)')
+
+                // console.log({isLoggedIn, localUser, userToken});
+            }
+
+            setIsLoading(false);
+        }catch(error) {
+            setIsLoading(false);
+            console.log(`Login error: ${error}`)
+        }
+
+    }
+
+
+    useEffect(() => {
+        console.log({loginEmail})
+    }, [loginEmail])
 
     const animatedStyle = useAnimatedStyle(() => {
         return {
             transform: [
                 {
-                    translateX: translateX.value
+                     translateX: translateX.value
                 }
             ]
         }
     })
 
-    useEffect(() => {
-        console.log({signInDetails})
-    }, [signInDetails])
-
-    const AnimatedKeyboardAvoidingView = Animated.createAnimatedComponent(KeyboardAvoidingView)
 
     return (
         <View style={styles.container}>
@@ -162,18 +181,21 @@ export default function RegisterPage() {
                     <SmallHeading>Sign up</SmallHeading>
                 </View>
                 <View style={styles.form}>
-                    <ImageInput circular size={120}/>
-                    <TextInput value={signInUsername} placeholder={'Username'} updateFunction={setSignInUsername} />
-                    <TextInput value={signInEmail} placeholder={'Email'} updateFunction={setSignInEmail} />
-                    <TextInput value={signInNumber} placeholder={'Phone number'} updateFunction={setSignInNumber} />
-                    <TextInput value={signInPassword} secureTextEntry placeholder={'Password'} updateFunction={setSignInPassword} />
+                    <ImageInput image={profilePicture} setter={setProfilePicture} circular size={120}/>
+                    <TextInput value={signInUsername} updateFunction={setSignInUsername} placeholder={'Username'}/>
+                    {/* <TextInput value={signInEmail} updateFunction={setSignInEmail} placeholder={'Email'}/> */}
+                    <EmailInput value={signInEmail} updateFunction={setSignInEmail} placeholder={'Email'} />
+                    <TextInput value={signInNumber} updateFunction={setSignInNumber} placeholder={'Phone number'}/>
+                    {/* <TextInput value={signInPassword} secureTextEntry={true} placeholder={'Password'} updateFunction={setSignInPassword} /> */}
+                    <PasswordInput value={signInPassword} updateFunction={setSignInPassword} placeholder={'Password'}/>
                     {/* <PrimaryButton>
                         <Text>Sign in</Text>
                     </PrimaryButton> */}
                     {/* <PrimaryButton isLoading={true}>Sign in</PrimaryButton> */}
-                    <PrimaryButton full callback={handleSignIn} isLoading={isLoading}>Sign in</PrimaryButton>
+                    <PrimaryButton full callback={handleSignIn} disabled={isSignInDisabled} isLoading={isLoading}>Sign in</PrimaryButton>
                 </View>
                 {/* <SecondaryButton style={{flex: 1}} callback={handleTransformRight}>Log in</SecondaryButton> */}
+                {/* <SecondaryButton callback={handleTransformRight}>Log in</SecondaryButton> */}
                 <Tooltip buttonText="Log in" callback={handleTransformRight} type={TooltipTypes.Button} />
             </Animated.View>
 
@@ -186,14 +208,17 @@ export default function RegisterPage() {
                 </View>
                 <View style={styles.form}>
                     {/* <ImageInput circular /> */}
-                    <TextInput value={signInUsername} placeholder={'Username'} updateFunction={setLogInUsername} />
-                    <TextInput value={signInPassword} placeholder={'Password'} updateFunction={setLogInPassword} />
+                    {/* <TextInput value={loginUsername} placeholder={'Username'} updateFunction={setLoginUsername} /> */}
+                    {/* <TextInput value={loginEmail} updateFunction={setLoginEmail} placeholder={'Email'}/> */}
+                    <EmailInput value={loginEmail} updateFunction={setLoginEmail} placeholder={'Email'}/>
+                    {/* <TextInput value={loginPassword} secureTextEntry={true} autoCorrect={false} placeholder={'Password'} updateFunction={setLoginPassword} /> */}
+                    <PasswordInput  value={loginPassword} updateFunction={setLoginPassword} placeholder={'Password'}/>
                     {/* <TextInput value={signInEmail} placeholder={'Email'} updateFunction={setSignInEmail} /> */}
                     {/* <PrimaryButton>
                         <Text>Sign in</Text>
                     </PrimaryButton> */}
                     {/* <PrimaryButton isLoading={true}>Sign in</PrimaryButton> */}
-                    <PrimaryButton full>Log in</PrimaryButton>
+                    <PrimaryButton callback={handleLogin} disabled={isLoginDisabled} isLoading={isLoading} full>Log in</PrimaryButton>
                 </View>
                 {/* <SecondaryButton callback={handleTransformLeft}>Sign up</SecondaryButton> */}
                 <Tooltip buttonText="Sign up" callback={handleTransformLeft} type={TooltipTypes.Button} />

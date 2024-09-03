@@ -26,8 +26,8 @@ function TabBarIcon(props: {
 
 export default function TabLayout() {
   const colorScheme = useColorScheme();
-  const {isLoading, isLoggedIn} = localUserStore();
-  const router = useRouter();
+  // const {isLoading, isLoggedIn} = localUserStore();
+  // const router = useRouter();
 
 
   return (
@@ -64,7 +64,7 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
-        name="two"
+        name="settings"
         options={{
           title: 'Settings',
           tabBarIcon: ({ color }) => <TabBarIcon name="settings-outline" color={color} />,
