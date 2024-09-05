@@ -8,21 +8,45 @@ import Colors from "@/constants/Colors";
 import { useEffect, useState } from "react";
 import { LinearGradient } from "expo-linear-gradient";
 
+interface Conversation {
+    id: string,
+    conversationType: string,
+    createdBy: string,
+    createdAt: string
+}
+
+interface ConversationParticipant {
+    id: string,
+    username: string,
+    email: string,
+    phone: string,
+    conversationId: string,
+    participantId: string,
+    profilePicture: string,
+    createdAt: string,
+    joinDate: string,
+}
+
 interface ConversationPreviewProps {
     preview: {
-        type: string,
-        id: string,
-        username: string,
-        latestMessage: string,
+
+        // type: string,
+        // id: string,
+        // username: string,
+        // latestMessage: string,
+        conversation: Conversation,
+        conversationParticipants: ConversationParticipant[]
     }
 }
 
 // export function MessagePreview({userId, username, latestMessage}: MessagePreviewProps) {
 export function ConversationPreview({preview}: ConversationPreviewProps) {
     const colorScheme = useColorScheme() ?? 'dark';
-    const {type, id, username, latestMessage} = preview;
+    const {conversation, conversationParticipants} = preview;
+    const {id, conversationType} = conversation;
+    // const {} = conversationParticipants;
     return (
-        <Link href={`/${type}/${id}`} asChild>
+        <Link href={`/${conversationType}/${id}`} asChild>
             {/* <Pressable android_ripple={{color: 'rgba(255, 255, 255, .25)', radius: 50, foreground: true, borderless: false}}> */}
             {/* <Pressable android_ripple={{color: 'rgba(255, 255, 255, .25)', radius: 100, foreground: true, borderless: false}}> */}
             <Pressable android_ripple={{color: 'black', foreground: true, borderless: false}}>
@@ -30,10 +54,10 @@ export function ConversationPreview({preview}: ConversationPreviewProps) {
                     <View style={styles.profilePictureWrapper}>
                         <Image style={styles.profilePicture} source={require('../assets/images/favicon.png')} resizeMode="cover"/>
                     </View>
-                    <View style={[styles.conversationDetailsWrapper, {backgroundColor: Colors[colorScheme].elevated}]}>
+                    {/* <View style={[styles.conversationDetailsWrapper, {backgroundColor: Colors[colorScheme].elevated}]}>
                         <Text style={styles.username}>{username}</Text>
                         <Text>{latestMessage}</Text>
-                    </View>
+                    </View> */}
                 </View>
             </Pressable>
         </Link>

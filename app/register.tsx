@@ -1,7 +1,7 @@
 import { PrimaryButton, SecondaryButton, Tooltip, TooltipTypes } from "@/components/Buttons";
 import { EmailInput, ImageInput, PasswordInput, TextInput } from "@/components/Inputs";
 import { Heading, SmallHeading } from "@/components/StyledText";
-import { Text, View } from "@/components/Themed";
+import { Text, View, ScrollView } from "@/components/Themed";
 import Colors from "@/constants/Colors";
 import { localUserStore } from "@/constants/globalState";
 import { serverRoute } from "@/constants/routes";
@@ -9,7 +9,7 @@ import { addLocalToken, addLocalUser } from "@/utils/saveToLocal";
 import { ImagePickerAsset } from "expo-image-picker";
 import { useRouter } from "expo-router";
 import { useState, useEffect } from "react";
-import {Dimensions, ScrollView, Pressable, StyleSheet, KeyboardAvoidingView, useColorScheme} from 'react-native';
+import {Dimensions, Platform, Pressable, StyleSheet, KeyboardAvoidingView, useColorScheme} from 'react-native';
 import Animated, { useAnimatedStyle, useSharedValue, withSpring, withTiming, Easing } from "react-native-reanimated";
 
 interface SignInDetails {
@@ -79,15 +79,17 @@ export default function RegisterPage() {
     //     console.log('register page')
     // }, [])
 
-    const route = "http://192.168.17.241:3000";
+    // const route = "http://192.168.17.241:3000";
 
     // console.log({serverRoute})
+    // console.log({serverRoute})
+
     async function handleSignIn() {  
         try {
             setIsLoading(true);
             console.log('started')
             // const response = await fetch('http://192.168.34.241:3000/auth/register', {
-            const response = await fetch(`${route}/auth/register`, {
+            const response = await fetch(`${serverRoute}/auth/register`, {
                 method: 'POST',
                 headers: {'Content-Type': 'application/json'},
                 body: JSON.stringify(signInDetails)
@@ -119,7 +121,8 @@ export default function RegisterPage() {
         try {
             setIsLoading(true);
 
-            const response = await fetch(`${route}/auth/log-in`, {
+            console.log({serverRoute})
+            const response = await fetch(`${serverRoute}/auth/log-in`, {
                 method: 'PATCH',
                 headers: {'Content-Type': 'application/json'},
                 body: JSON.stringify(loginDetails)
@@ -153,9 +156,9 @@ export default function RegisterPage() {
     }
 
 
-    useEffect(() => {
-        console.log({loginEmail})
-    }, [loginEmail])
+    // useEffect(() => {
+    //     console.log({loginEmail})
+    // }, [loginEmail])
 
     const animatedStyle = useAnimatedStyle(() => {
         return {
@@ -169,6 +172,27 @@ export default function RegisterPage() {
 
 
     return (
+        // <ScrollView 
+        //     style={styles.container}
+        //     contentContainerStyle={{
+        //         // width: '100%',
+        //         flexDirection: 'row',
+        //         // alignItems: 'center',
+        //         alignItems: 'center',
+        //         justifyContent: 'space-between'
+        //     }}
+        // >
+        // <KeyboardAvoidingView 
+        //     style={styles.container}
+        //     behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        //     contentContainerStyle={{
+        //         // width: '100%',
+        //         flexDirection: 'row',
+        //         // alignItems: 'center',
+        //         alignItems: 'center',
+        //         justifyContent: 'space-between'
+        //     }}
+        // >
         <View style={styles.container}>
             {/* <View style={styles.pageWrapper}> */}
             <Animated.View
@@ -180,7 +204,7 @@ export default function RegisterPage() {
                     {/* <Heading style={{textAlign: 'center'}}>Sign up</Heading> */}
                     <SmallHeading>Sign up</SmallHeading>
                 </View>
-                <View style={styles.form}>
+                <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={styles.form}>
                     <ImageInput image={profilePicture} setter={setProfilePicture} circular size={120}/>
                     <TextInput value={signInUsername} updateFunction={setSignInUsername} placeholder={'Username'}/>
                     {/* <TextInput value={signInEmail} updateFunction={setSignInEmail} placeholder={'Email'}/> */}
@@ -193,7 +217,7 @@ export default function RegisterPage() {
                     </PrimaryButton> */}
                     {/* <PrimaryButton isLoading={true}>Sign in</PrimaryButton> */}
                     <PrimaryButton full callback={handleSignIn} disabled={isSignInDisabled} isLoading={isLoading}>Sign in</PrimaryButton>
-                </View>
+                </KeyboardAvoidingView>
                 {/* <SecondaryButton style={{flex: 1}} callback={handleTransformRight}>Log in</SecondaryButton> */}
                 {/* <SecondaryButton callback={handleTransformRight}>Log in</SecondaryButton> */}
                 <Tooltip buttonText="Log in" callback={handleTransformRight} type={TooltipTypes.Button} />
@@ -223,6 +247,7 @@ export default function RegisterPage() {
                 {/* <SecondaryButton callback={handleTransformLeft}>Sign up</SecondaryButton> */}
                 <Tooltip buttonText="Sign up" callback={handleTransformLeft} type={TooltipTypes.Button} />
             </Animated.View>
+        {/* </ScrollView> */}
         </View>
     )
 }
@@ -230,15 +255,24 @@ export default function RegisterPage() {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        alignItems: 'center',
-        justifyContent: 'space-between',
+        // alignItems: 'center',
+        // justifyContent: 'space-between',
         // paddingVertical: 16,
+        // padding: 0,
+        // width: '100%',
+        // width: '200%',
+        // minHeight: '100%',
+        // backgroundColor: 'darkblue',
+        // minHeight: '100%',
         paddingBottom: 16,
         flexDirection: 'row',
         overflow: 'hidden',
         // paddingTop: 60,
         // paddingBottom: 40,
         // gap: 16
+        // borderColor: 'red',
+        // borderStyle: 'solid',
+        // borderWidth: 1,
     },
     pageWrapper: {
         // transform: [
@@ -250,6 +284,12 @@ const styles = StyleSheet.create({
         paddingHorizontal: 16,
         gap: 8,
         width: '100%',
+        // width: '50%',
+        // width: '50%',
+        // flex: 1,
+        // width: '100%',
+        // width: '100%',
+        // flex: 1,
         alignItems: 'center'
     },
     headingSection: {

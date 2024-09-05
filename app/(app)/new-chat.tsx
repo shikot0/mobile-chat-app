@@ -8,6 +8,7 @@ import { FlashList } from "@shopify/flash-list";
 import { useRouter } from "expo-router";
 import { useEffect, useState } from "react";
 import { StyleSheet } from "react-native";
+import { serverRoute } from "@/constants/routes";
 
 type User = {
     id: string,
@@ -24,19 +25,19 @@ export default function NewChatPage() {
     const {userToken, localUser} = localUserStore();
     const router = useRouter();
     
-    const route = 'http://192.168.17.241:3000';
+    // const route = 'http://192.168.17.241:3000';
     useEffect(() => {
         console.log('started')
-        fetch(`${route}/users?page=1&limit=20`, {
+        fetch(`${serverRoute}/users?page=1&limit=20`, {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
-                'token': `${userToken}`
+                // 'Bearer': `${userToken}`
             },
         })
         .then(res => res.json())
         .then(data => {
-            console.log({data});
+            // console.log({data});
             setUsers(prev => { 
                 return [...prev, ...data].filter(item => item.id !== localUser?.id)
             })
@@ -48,7 +49,7 @@ export default function NewChatPage() {
         if(newChatParticipants.length <= 0) return;
 
         setIsLoading(true);
-        const response = await fetch(`${route}/messages/new-conversation`, {
+        const response = await fetch(`${serverRoute}/messages/new-conversation`, {
             method: 'POST',
             // body: JSON.stringify([...newChatParticipants, localUser?.id]),
             body: JSON.stringify({
@@ -59,7 +60,7 @@ export default function NewChatPage() {
         })
 
         const body = await response.json();
-        console.log({body})
+        // console.log({body})
         if(body.succeeded) {
             router.replace('/')
         }

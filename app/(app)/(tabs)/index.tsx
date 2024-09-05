@@ -8,11 +8,15 @@ import { FlashList } from '@shopify/flash-list';
 import { useColorScheme } from '@/components/useColorScheme';
 import Colors from '@/constants/Colors';
 import { PrimaryButton } from '@/components/Buttons';
+import { serverRoute } from '@/constants/routes';
+import { getConversations } from '@/utils/apiCalls';
+import { localUserStore } from '@/constants/globalState';
 
-export default function MessagesScreen() {
+export default function ConversationsScreen() {
   const [isLoading, setIsLoading] = useState<boolean>(true);
-  const [messages, setMessages] = useState([]);
-  const [noMessages, setNoMessages] = useState<boolean>(false);
+  const [conversations, setConversations] = useState([]);
+  const [noConversations, setNoConversations] = useState<boolean>(false);
+  const {userToken} = localUserStore();
   // const messages = [
   //   {
   //     type: 'chat',
@@ -36,58 +40,84 @@ export default function MessagesScreen() {
 
   const colorScheme = useColorScheme() ?? 'dark';
 
-  const route = 'http://192.168.17.241:3000'
+  // const route = 'http://192.168.198.241:3000'
+  // console.log({serverRoute})
+
+  async function loadConversations() {
+    try {
+      setIsLoading(true);
+
+      const conversationsResult = await getConversations(userToken);
+      setConversations(conversationsResult);
+      if(conversationsResult.length === 0) setNoConversations(true);
+
+      setIsLoading(false);
+    }catch(error) {
+      console.log(`Error loading conversations: ${error}`)
+    }
+  }
 
   useEffect(() => {
-    setIsLoading(true);
 
-    fetch(`${route}/messages/conversations`)
-    .then(res => res.json())
-    .then(data => {
-      console.log({data})
-      if(data.succeeded) {
-        setMessages(data.returnedConversations);
-        console.log({data})
-        if(data.returnedConversations.length === 0) setNoMessages(true);
-      }
-    }) 
-    .catch(error => {
-      console.log(`Error: ${error}`)
-    })
-
-    // setTimeout(() => setIsLoading(false), 10000)
-    setIsLoading(false);
-  
-    // console.log({data})
+    // fetch(`${serverRoute}/messages/conversations`)
+    // .then(res => res.json())
+    // .then(data => {
+    //   // console.log({data})
+    //   if(data.succeeded) {
+    //     setMessages(data.returnedConversations);
+    //     // console.log({data})
+    //     if(data.returnedConversations.length === 0) setNoMessages(true);
+    //   }
+    // }) 
+    // .catch(error => {
+    //   console.log(`Error: ${error}`)
+    // })
+    loadConversations()
   }, [])
+
+  // useEffect(() => {
+  //   getConversations(userToken)
+  // }, [])
  
   return (
     <View style={styles.container}>
 
       <FlashList 
-          data={messages}
+          data={conversations}
           // style={styles.flatList}
           contentContainerStyle={{paddingVertical: 48}}
           estimatedItemSize={86}
           // refreshControl={}
+          ListHeaderComponent={() => <ListHeading>Messages</ListHeading>}
           ListEmptyComponent={() => {
               if(isLoading) {
                 return <ActivityIndicator style={styles.centeredActivityIndicator} size={50} color={Colors[colorScheme].primary}/>
               }else {
                 return (
                   <View style={styles.noConversationsWrapper}>
-                    {/* <Text style={styles.centeredText}>Looks like you have no conversations...</Text> */}
-                    <PrimaryButton link={"/new-chat"}>Start a conversation</PrimaryButton>
+                    <Text style={styles.centeredText}>Looks like you have no conversations...</Text>
+                    {/* <PrimaryButton link={"/new-chat"}>Start a conversation</PrimaryButton> */}
                   </View>
+                  // <View style={styles.noConversationsWrapper}>
+                  //   {/* <Text style={styles.centeredText}>Looks like you have no conversations...</Text> */}
+                  //   <PrimaryButton link={"/new-chat"}>Start a conversation</PrimaryButton>
+                  // </View>
                 )
               }
             }
           }
+          ListFooterComponent={() => {
+            return (
+              <View style={styles.noConversationsWrapper}>
+                {/* <Text style={styles.centeredText}>Looks like you have no conversations...</Text> */}
+                <PrimaryButton link={"/new-chat"}>Start a conversation</PrimaryButton>
+              </View>
+            )
+          }}
           renderItem={({item, index}) => {
             // return <Text>{item.from}</Text>
             return <ConversationPreview preview={item} />
           }}
-          ListHeaderComponent={() => <ListHeading>Messages</ListHeading>}
       />
   
       

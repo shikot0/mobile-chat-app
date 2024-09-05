@@ -195,7 +195,8 @@ const styles = StyleSheet.create({
         fontSize: 16,
         width: '100%',
         // flex: 8,
-        borderRadius: 24,
+        borderRadius: 8
+        // borderRadius: 24,
     },
     sendButton: {
         display: 'flex',

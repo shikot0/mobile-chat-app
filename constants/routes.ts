@@ -1,1 +1,1 @@
-export const serverRoute = process.env.SERVER_ROUTE
+export const serverRoute = process.env.EXPO_PUBLIC_SERVER_ROUTE
