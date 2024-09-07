@@ -87,7 +87,7 @@ export default function RegisterPage() {
     async function handleSignIn() {  
         try {
             setIsLoading(true);
-            console.log('started')
+            // console.log('started')
             // const response = await fetch('http://192.168.34.241:3000/auth/register', {
             const response = await fetch(`${serverRoute}/auth/register`, {
                 method: 'POST',
@@ -95,7 +95,7 @@ export default function RegisterPage() {
                 body: JSON.stringify(signInDetails)
             })
             const body = await response.json();
-            console.log({body})
+            // console.log({body})
             const {succeeded} = body;
             if(succeeded) {
                 const {user, token} = body;
@@ -121,7 +121,7 @@ export default function RegisterPage() {
         try {
             setIsLoading(true);
 
-            console.log({serverRoute})
+            // console.log({serverRoute})
             const response = await fetch(`${serverRoute}/auth/log-in`, {
                 method: 'PATCH',
                 headers: {'Content-Type': 'application/json'},
@@ -131,7 +131,7 @@ export default function RegisterPage() {
             const body = await response.json();
 
 
-            console.log({body})
+            // console.log({body})
             const {succeeded} = body;
             if(succeeded) {
                 const {user, token} = body;

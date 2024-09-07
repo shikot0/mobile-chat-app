@@ -6,6 +6,7 @@ import { Image } from "react-native";
 import { Link } from "expo-router";
 import Colors from "@/constants/Colors";
 import { useEffect, useState } from "react";
+import { localUserStore } from '@/constants/globalState';
 import { LinearGradient } from "expo-linear-gradient";
 
 interface Conversation {
@@ -21,7 +22,7 @@ interface ConversationParticipant {
     email: string,
     phone: string,
     conversationId: string,
-    participantId: string,
+    userId: string,
     profilePicture: string,
     createdAt: string,
     joinDate: string,
@@ -43,6 +44,9 @@ interface ConversationPreviewProps {
 export function ConversationPreview({preview}: ConversationPreviewProps) {
     const colorScheme = useColorScheme() ?? 'dark';
     const {conversation, conversationParticipants} = preview;
+    // const {profilePicture} = conversat
+    const {localUser} = localUserStore();
+    console.log({conversation, conversationParticipants})
     const {id, conversationType} = conversation;
     // const {} = conversationParticipants;
     return (
@@ -52,18 +56,43 @@ export function ConversationPreview({preview}: ConversationPreviewProps) {
             <Pressable android_ripple={{color: 'black', foreground: true, borderless: false}}>
                 <View style={[styles.conversationPreview, {backgroundColor: Colors[colorScheme].elevated}]}>
                     <View style={styles.profilePictureWrapper}>
-                        <Image style={styles.profilePicture} source={require('../assets/images/favicon.png')} resizeMode="cover"/>
+                        {/* <Image style={styles.profilePicture} source={require('../assets/images/favicon.png')} resizeMode="cover"/> */}
+                        {/* <Image style={styles.profilePicture} source={conversationType === 'one-to-one' && !conversationParticipants[0]?.profilePicture ? require('../assets/images/person.png') : require('../assets/images/favicon.png')} resizeMode="cover"/> */}
+                        {conversationParticipants.filter(participant => {
+                            if(participant.userId !== localUser?.id) return participant;
+                        }).map((participant, index) => {
+                            // return <Image key={index.toString()} style={styles.profilePicture} source={conversationType === 'one-to-one' && !conversationParticipants[0]?.profilePicture ? require('../assets/images/person.png') : require('../assets/images/favicon.png')} resizeMode="cover"/>
+                            return <Image key={index.toString()} style={styles.profilePicture} source={require('../assets/images/person.png')} resizeMode="cover"/>
+                        })}
                     </View>
                     {/* <View style={[styles.conversationDetailsWrapper, {backgroundColor: Colors[colorScheme].elevated}]}>
                         <Text style={styles.username}>{username}</Text>
                         <Text>{latestMessage}</Text>
                     </View> */}
+                    <View style={[styles.conversationDetailsWrapper, {backgroundColor: Colors[colorScheme].elevated}]}>
+                        {/* {conversationParticipants.filter((participant) => {
+                            if(participant.userId !== localUser?.id) return participant;
+                        }).map((participant, index, arr) => {
+                            if(index < arr.length-1) {
+                                return <Text key={index.toString()} style={styles.username}>{`${participant.username},`}</Text>
+                            }else {
+                                return <Text key={index.toString()} style={styles.username}>{participant.username}</Text>
+                            }
+                        })} */}
+                        {conversationParticipants.map((participant, index, arr) => {
+                            if(index < arr.length-1) {
+                                return <Text key={index.toString()} style={styles.username}>{`${participant.username},`}</Text>
+                            }else {
+                                return <Text key={index.toString()} style={styles.username}>{participant.username}</Text>
+                            }
+                        })}
+                    </View>
                 </View>
             </Pressable>
         </Link>
     )
-}
-
+}     
+ 
 export type UserPreviewProps = {
     preview: {
         id: string,
@@ -166,8 +195,11 @@ const styles = StyleSheet.create({
     },
     conversationDetailsWrapper: {
         flexGrow: 1,
-        alignItems: 'flex-start',
-        justifyContent: 'center',
+        flexDirection: 'row',
+        // justifyContent: 'center',
+        // alignItems: 'flex-start',
+        justifyContent: 'flex-start',
+        alignItems: 'center',
         backgroundColor: 'transparent',
         gap: 8,
     },

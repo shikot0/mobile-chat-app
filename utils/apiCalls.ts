@@ -16,9 +16,10 @@ export async function getConversations(token: string | null) {
         })
         const body = await response.json();
         console.log({apiCallBody: body})
-        if(body.succeeded) {
-            return body.result
-        }else return []
+
+        if(!body.succeeded) return [];
+        
+        return body.result
     }catch(error) {
         console.log(`Error collecting user conversations: ${error}`)
     }

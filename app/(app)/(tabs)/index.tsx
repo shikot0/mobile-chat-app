@@ -94,7 +94,7 @@ export default function ConversationsScreen() {
                 return <ActivityIndicator style={styles.centeredActivityIndicator} size={50} color={Colors[colorScheme].primary}/>
               }else {
                 return (
-                  <View style={styles.noConversationsWrapper}>
+                  <View style={styles.listFooterWrapper}>
                     <Text style={styles.centeredText}>Looks like you have no conversations...</Text>
                     {/* <PrimaryButton link={"/new-chat"}>Start a conversation</PrimaryButton> */}
                   </View>
@@ -108,9 +108,13 @@ export default function ConversationsScreen() {
           }
           ListFooterComponent={() => {
             return (
-              <View style={styles.noConversationsWrapper}>
-                {/* <Text style={styles.centeredText}>Looks like you have no conversations...</Text> */}
-                <PrimaryButton link={"/new-chat"}>Start a conversation</PrimaryButton>
+              // <View style={styles.listFooterWrapper}>
+              //   {/* <Text style={styles.centeredText}>Looks like you have no conversations...</Text> */}
+              //   <PrimaryButton link={"/new-chat"}>Start a conversation</PrimaryButton>
+              // </View>
+
+              <View style={styles.listFooterWrapper}>
+                <PrimaryButton callback={loadConversations}>Reload</PrimaryButton>
               </View>
             )
           }}
@@ -149,7 +153,7 @@ const styles = StyleSheet.create({
     fontSize: 20,
     fontWeight: 'bold',
   },
-  noConversationsWrapper: {
+  listFooterWrapper: {
     flex: 1,
     minHeight: 250,
     alignItems: 'center', 

@@ -27,7 +27,7 @@ export function TextInput({value, updateFunction, trimWhitespace, placeholder, .
         <OriginalTextInput 
             value={value} 
             onChangeText={text => {
-                console.log({text})
+                // console.log({text})
                 if(trimWhitespace) {
                     updateFunction(text.trim())
                 }else {
