@@ -6,7 +6,7 @@ export default function Layout() {
             {/* <Stack.Screen name="[id]" /> */}
             {/* <Stack.Screen name="[id]" options={{statusBarColor: 'black', headerShown: true}}/>
             <Stack.Screen name="modal" options={{statusBarHidden: true, headerShown: false, presentation: 'transparentModal', animation: 'fade'}} /> */}
-            <Stack.Screen name="[id]" options={{headerShown: true}}/>
+            <Stack.Screen name="[id]" options={{headerShown: true, headerBackButtonMenuEnabled: true}}/>
             <Stack.Screen name="modal" options={{headerShown: false, presentation: 'transparentModal', animation: 'fade'}} />
         </Stack>
     )

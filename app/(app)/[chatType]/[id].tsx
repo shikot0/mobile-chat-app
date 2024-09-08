@@ -5,12 +5,15 @@ import {useEffect, useState} from 'react';
 import {Tabs} from 'expo-router';
 import {Audio} from 'expo-av';
 import Animated, { SlideInRight, withTiming, Easing, withSpring } from 'react-native-reanimated';
-import { StyleSheet, Image, TextInput, Pressable, FlatList, NativeSyntheticEvent, TextInputTextInputEventData, useColorScheme, Dimensions, ScrollView, KeyboardAvoidingView } from "react-native";
+import { StyleSheet, Image, TextInput, Pressable, FlatList, NativeSyntheticEvent, TextInputTextInputEventData, useColorScheme, Dimensions, ScrollView, KeyboardAvoidingView, Platform } from "react-native";
 import Colors from "@/constants/Colors";
 import { MessageInput } from "@/components/Inputs";
 import { MessageHandler } from "@/components/MessageComponents";
 import {LinearGradient} from 'expo-linear-gradient';
 import {FlashList} from '@shopify/flash-list';
+import { serverRoute } from "@/constants/routes";
+import { fetchWithAuth } from "@/utils/apiCalls";
+import { localUserStore } from "@/constants/globalState";
 
 // interface ChatPageProps {
 //     params: {
@@ -23,60 +26,76 @@ const {width, height} = Dimensions.get('window');
 
 // export default function ChatPage({params: {type, id}}: ChatPageProps) {
 export default function ChatPage() {
-    const {id, chatType} = useLocalSearchParams<{id: string, chatType: string}>();
+    const {id} = useLocalSearchParams<{id: string, chatType: string}>();
     const [newMessage, setNewMessage] = useState<string>('');
-    const [messages, setMessages] = useState<any[]>([
-        {   
-            type: 'text',
-            sender: 'amin',
-            text: 'This is a test message'
-        },
-        {   
-            type: 'text',
-            sender: 'me',
-            text: 'Ok'
-        },
-        {   
-            type: 'text',
-            sender: 'amin',
-            text: 'How have you been?'
-        },
-        {   
-            type: 'text',
-            sender: 'me',
-            text: "I've been good"
-        },
-        {   
-            type: 'text',
-            sender: 'amin',
-            text: 'Okay'
-        },
-        {
-            type: 'images',
-            sender: 'me',
-            // imageLinks: ['../../../assets/images/favicon.png']
-            imageLinks: ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10']
-        },
-        {
-            type: 'images',
-            sender: 'amin',
-            // imageLinks: ['../../../assets/images/favicon.png']
-            imageLinks: ['1', '2']
-        },
-        {
-            type: 'images',
-            sender: 'me',
-            // imageLinks: ['../../../assets/images/favicon.png']
-            imageLinks: ['1']
-        }, 
-        {
-            type: 'audio',
-            sender: 'me'
-        }
-    ])
+    const [messages, setMessages] = useState([]);
+    const {userToken} = localUserStore();
+    // const [messages, setMessages] = useState<any[]>([
+    //     {   
+    //         type: 'text',
+    //         sender: 'amin',
+    //         text: 'This is a test message'
+    //     },
+    //     {   
+    //         type: 'text',
+    //         sender: 'me',
+    //         text: 'Ok'
+    //     },
+    //     {   
+    //         type: 'text',
+    //         sender: 'amin',
+    //         text: 'How have you been?'
+    //     },
+    //     {   
+    //         type: 'text',
+    //         sender: 'me',
+    //         text: "I've been good"
+    //     },
+    //     {   
+    //         type: 'text',
+    //         sender: 'amin',
+    //         text: 'Okay'
+    //     },
+    //     {
+    //         type: 'images',
+    //         sender: 'me',
+    //         // imageLinks: ['../../../assets/images/favicon.png']
+    //         imageLinks: ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10']
+    //     },
+    //     {
+    //         type: 'images',
+    //         sender: 'amin',
+    //         // imageLinks: ['../../../assets/images/favicon.png']
+    //         imageLinks: ['1', '2']
+    //     },
+    //     {
+    //         type: 'images',
+    //         sender: 'me',
+    //         // imageLinks: ['../../../assets/images/favicon.png']
+    //         imageLinks: ['1']
+    //     }, 
+    //     {
+    //         type: 'audio',
+    //         sender: 'me'
+    //     }
+    // ])
                         
     // let flatListRef: FlatList<any> | null = null;
     let flashListRef: FlashList<any> | null = null;
+
+    async function getMessages() {
+        try {
+            const response = await fetchWithAuth(`${serverRoute}/messages/conversations/${id}/get-messages`, userToken)
+            const body = await response.json();
+            console.log({body})
+        } catch(error) {
+            console.log(`Error collecting messages for the conversation: ${error}`)
+        }
+    }
+
+    useEffect(() => {
+        getMessages();
+    }, [])
 
     async function playSound() {
         const playSound = new Audio.Sound()
@@ -90,9 +109,9 @@ export default function ChatPage() {
 
     async function addNewMessage() {
         console.log('adding new message!')
-        setMessages(prev => {
-            return [...prev, {type: 'text', sender: 'me', text: newMessage}]
-        });
+        // setMessages(prev => {
+        //     return [...prev, {type: 'text', sender: 'me', text: newMessage}]
+        // });
         setNewMessage('')
         // flatListRef?.scrollToEnd({animated: true})
         await playSound();
@@ -167,74 +186,37 @@ export default function ChatPage() {
     return (
         <View style={styles.container}>
             <Stack.Screen options={{ title: id }} />
+            <LinearGradient
+                // colors={['rgba(0, 0, 0, .25)', 'transparent', 'rgba(0, 0, 0, .25)']}
+                // colors={['rgba(0, 0, 0, .25)', 'transparent', 'rgba(0, 0, 0, .25)']}
+                colors={['rgba(0, 0, 0, .15)', 'transparent', 'rgba(0, 0, 0, .15)']}
+                // colors={['red', 'transparent', 'red']}
+                style={styles.linearGradient}
+            />
             <View style={styles.chatWrapper}>
-            {/* <KeyboardAvoidingView style={styles.chatWrapper}> */}
+            {/* <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={styles.chatWrapper}> */}
                 {/* <LinearGradient
                     colors={['rgba(0, 0, 0, .25)', 'transparent', 'rgba(0, 0, 0, .25)']}
                     style={{position: 'absolute', top: 0, left: 0, height: '100%'}}
                 > */}
-                <LinearGradient
-                    // colors={['rgba(0, 0, 0, .25)', 'transparent', 'rgba(0, 0, 0, .25)']}
-                    // colors={['rgba(0, 0, 0, .25)', 'transparent', 'rgba(0, 0, 0, .25)']}
-                    colors={['rgba(0, 0, 0, .15)', 'transparent', 'rgba(0, 0, 0, .15)']}
-                    // colors={['red', 'transparent', 'red']}
-                    style={styles.linearGradient}
-                />
-                    {/* <FlatList 
-                        data={messages}
-                        style={styles.messagesWrapper} 
-                        contentContainerStyle={{padding: 8, gap: 8}}
-                        ref={(ref) => {
-                            flatListRef = ref;
-                        }}
-                        renderItem={({item, index}) => {
-                            return (
-                                <MessageHandler message={item} />
-                            )
-                        }}
-                    /> */}
 
-                    <FlashList 
-                        data={messages}
-                        // style={styles.messagesWrapper} 
-                        // contentContainerStyle={{padding: 8, gap: 8}}
-                        contentContainerStyle={{padding: 8}}
-                        // estimatedItemSize={messages.length}
-                        ref={(ref) => {
-                            flashListRef = ref;
-                        }}
-                        initialScrollIndex={messages.length-1}
-                        estimatedItemSize={91}
-                        renderItem={({item, index}) => {
-                            return (
-                                <MessageHandler message={item} />
-                            )
-                        }}
-                    />
-                {/* </LinearGradient> */}
-                {/* <ScrollView
-                    style={styles.messagesWrapper} 
-                    contentContainerStyle={{flex: 1, padding: 8, gap: 8}}
-                    
-                >
-                    {messages.map((message, index) => {
+                <FlashList 
+                    data={messages}
+                    // style={styles.messagesWrapper} 
+                    // contentContainerStyle={{padding: 8, gap: 8}}
+                    contentContainerStyle={{padding: 8}}
+                    // estimatedItemSize={messages.length}
+                    // ref={(ref) => {
+                    //     flashListRef = ref;
+                    // }}
+                    initialScrollIndex={messages.length-1}
+                    estimatedItemSize={91}
+                    renderItem={({item, index}) => {
                         return (
-                            <Animated.View
-                                key={index.toString()}
-                                style={[
-                                    styles.message, 
-                                    {
-                                        alignSelf: message.from === 'me' ? "flex-end": 'flex-start'
-                                    }
-                                ]}
-                                // entering={SlideInRight}
-                                entering={textEnteringAnim}
-                            >
-                                <Text>{message.text}</Text>
-                            </Animated.View>
-                        ) 
-                    })}
-                </ScrollView> */}
+                            <MessageHandler message={item} />
+                        )
+                    }}
+                />
             </View>
             {/* </KeyboardAvoidingView> */}
             
@@ -258,6 +240,7 @@ export default function ChatPage() {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
+        position: 'relative'
     },
     chatWrapper: {
         flex: 12,
@@ -318,6 +301,7 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         alignItems: 'center',
         paddingVertical: 8,
+        // backgroundColor: 'transparent',
         paddingHorizontal: 8,
         gap: 8,
         // borderWidth: 1,

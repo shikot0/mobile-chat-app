@@ -11,6 +11,7 @@ import { PrimaryButton } from '@/components/Buttons';
 import { serverRoute } from '@/constants/routes';
 import { getConversations } from '@/utils/apiCalls';
 import { localUserStore } from '@/constants/globalState';
+import { db } from '@/drizzle/db';
 
 export default function ConversationsScreen() {
   const [isLoading, setIsLoading] = useState<boolean>(true);
@@ -49,10 +50,12 @@ export default function ConversationsScreen() {
 
       const conversationsResult = await getConversations(userToken);
       setConversations(conversationsResult);
+      
       if(conversationsResult.length === 0) setNoConversations(true);
 
       setIsLoading(false);
     }catch(error) {
+      setIsLoading(false);
       console.log(`Error loading conversations: ${error}`)
     }
   }

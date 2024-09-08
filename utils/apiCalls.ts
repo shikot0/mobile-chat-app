@@ -1,6 +1,16 @@
 import { localUserStore } from "@/constants/globalState";
 import { serverRoute } from "@/constants/routes";
 
+export function fetchWithAuth(route: string, token: string | null, method?: RequestInit["method"]): Promise<Response> {
+    return fetch(route, {
+        method: method ?? 'GET',
+        headers: {
+            'token': `${token}`,
+            'Content-Type': 'application/json'
+        }
+    })
+}
+
 
 export async function getConversations(token: string | null) {
     try {

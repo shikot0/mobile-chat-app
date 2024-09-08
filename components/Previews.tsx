@@ -46,7 +46,7 @@ export function ConversationPreview({preview}: ConversationPreviewProps) {
     const {conversation, conversationParticipants} = preview;
     // const {profilePicture} = conversat
     const {localUser} = localUserStore();
-    console.log({conversation, conversationParticipants})
+    // console.log({conversation, conversationParticipants})
     const {id, conversationType} = conversation;
     // const {} = conversationParticipants;
     return (
@@ -70,7 +70,7 @@ export function ConversationPreview({preview}: ConversationPreviewProps) {
                         <Text>{latestMessage}</Text>
                     </View> */}
                     <View style={[styles.conversationDetailsWrapper, {backgroundColor: Colors[colorScheme].elevated}]}>
-                        {/* {conversationParticipants.filter((participant) => {
+                        {conversationParticipants.filter((participant) => {
                             if(participant.userId !== localUser?.id) return participant;
                         }).map((participant, index, arr) => {
                             if(index < arr.length-1) {
@@ -78,14 +78,14 @@ export function ConversationPreview({preview}: ConversationPreviewProps) {
                             }else {
                                 return <Text key={index.toString()} style={styles.username}>{participant.username}</Text>
                             }
-                        })} */}
-                        {conversationParticipants.map((participant, index, arr) => {
+                        })}
+                        {/* {conversationParticipants.map((participant, index, arr) => {
                             if(index < arr.length-1) {
                                 return <Text key={index.toString()} style={styles.username}>{`${participant.username},`}</Text>
                             }else {
                                 return <Text key={index.toString()} style={styles.username}>{participant.username}</Text>
                             }
-                        })}
+                        })} */}
                     </View>
                 </View>
             </Pressable>

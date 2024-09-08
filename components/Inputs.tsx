@@ -93,12 +93,13 @@ export function MessageInput({value, updateFunction, submitFunction, submitDisab
 
     return (
         <View
+            // style={{backgroundColor: 'transparent'}}
             {...props}
         >
             <TextInput 
                 value={value} 
                 updateFunction={updateFunction}
-                style={{flex: 8}}
+                style={[styles.messageTextInput, {backgroundColor: Colors[colorScheme].elevated, flex: 8}]}
             />
             <Pressable 
                 onPress={() => submitFunction()}
@@ -197,6 +198,11 @@ const styles = StyleSheet.create({
         // flex: 8,
         borderRadius: 8
         // borderRadius: 24,
+    },
+    messageTextInput: {
+        height: 44,
+        paddingHorizontal: 16,
+        borderRadius: 24,
     },
     sendButton: {
         display: 'flex',
