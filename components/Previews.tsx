@@ -55,15 +55,65 @@ export function ConversationPreview({preview}: ConversationPreviewProps) {
             {/* <Pressable android_ripple={{color: 'rgba(255, 255, 255, .25)', radius: 100, foreground: true, borderless: false}}> */}
             <Pressable android_ripple={{color: 'black', foreground: true, borderless: false}}>
                 <View style={[styles.conversationPreview, {backgroundColor: Colors[colorScheme].elevated}]}>
-                    <View style={styles.profilePictureWrapper}>
+                    <View
+                        style={[
+                            styles.profilePictureWrapper,
+                            // {borderRadius: 0}
+                            // {
+                            //     flexWrap: conversationParticipants.length >= 3 ? 'wrap' : 'nowrap',
+                            //     justifyContent: conversationParticipants.length >= 3 ? 'center' : 'space-between',
+                            // }
+                        ]}
+                    >
                         {/* <Image style={styles.profilePicture} source={require('../assets/images/favicon.png')} resizeMode="cover"/> */}
                         {/* <Image style={styles.profilePicture} source={conversationType === 'one-to-one' && !conversationParticipants[0]?.profilePicture ? require('../assets/images/person.png') : require('../assets/images/favicon.png')} resizeMode="cover"/> */}
-                        {conversationParticipants.filter(participant => {
-                            if(participant.userId !== localUser?.id) return participant;
-                        }).map((participant, index) => {
-                            // return <Image key={index.toString()} style={styles.profilePicture} source={conversationType === 'one-to-one' && !conversationParticipants[0]?.profilePicture ? require('../assets/images/person.png') : require('../assets/images/favicon.png')} resizeMode="cover"/>
-                            return <Image key={index.toString()} style={styles.profilePicture} source={require('../assets/images/person.png')} resizeMode="cover"/>
-                        })}
+                        {conversationParticipants.length <= 2 ?
+                            <Image style={styles.profilePicture} source={require('../assets/images/person.png')} resizeMode="cover"/>
+                        : 
+                            // conversationParticipants.length > 4 ?
+                            conversationParticipants.length > 3 ?
+                                <Image style={styles.profilePicture} source={require('../assets/images/people.png')} resizeMode="cover"/>
+                            :
+                                // conversationParticipants.filter(participant => {
+                                //     if(participant.userId !== localUser?.id) return participant;
+                                // }).map((participant, index) => {
+                                //     return <Image
+                                //         key={index.toString()}
+                                //         style={[
+                                //             styles.profilePicture,
+                                //             {
+                                //                 alignSelf: (index === 1 || index === 3) ? 'flex-end': 'flex-start',
+                                //                 width: '50%',
+                                //                 height: '50%'                                                
+                                //             }
+                                //         ]}
+                                //         source={require('../assets/images/person.png')}
+                                //         resizeMode="cover"
+                                //     />
+                                // })
+                                conversationParticipants
+                                .filter(participant => {
+                                    if(participant.userId !== localUser?.id) return participant;
+                                })
+                                .map((participant, index) => {
+                                    return <Image
+                                        key={index.toString()}
+                                        style={[
+                                            styles.profilePicture,
+                                            {
+                                                // alignSelf: (index === 1 || index === 3) ? 'flex-end': 'flex-start',
+                                                // alignSelf: (index === 1 || index === 2) ? 'flex-end': 'flex-start',
+                                                alignSelf: index === 1 ? 'flex-end': 'flex-start',
+                                                width: '50%',
+                                                height: '50%'                                                
+                                            }
+                                        ]}
+                                        source={require('../assets/images/person.png')}
+                                        // resizeMode="cover"
+                                        resizeMode="contain"
+                                    />
+                                })
+                        }
                     </View>
                     {/* <View style={[styles.conversationDetailsWrapper, {backgroundColor: Colors[colorScheme].elevated}]}>
                         <Text style={styles.username}>{username}</Text>
@@ -183,15 +233,37 @@ const styles = StyleSheet.create({
         // borderColor: 'blue',
     },
     profilePictureWrapper: {
+        display: 'flex',
+        flexDirection: 'row',
+        // alignItems: ''
+        // flexWrap: 'wrap',
+        // justifyContent: 'center',
+        // justifyContent: 'center',
+        // alignItems: 'center',
+        // flexWrap: 'wrap',
+        // justifyContent: 'center',
+        // alignItems: 'center',
+        padding: 4,
+        // gap: 0,
         width: 52,
         height: 52,
         borderRadius: 100,
-        overflow: 'hidden',
+        // overflow: 'hidden',
+        // borderWidth: 1,
+        // borderStyle: 'solid',
+        // borderColor: 'red',
         // backgroundColor
     },
     profilePicture: {
+        // width: '100%',
+        // height: '100%',
+        // alignSelf: 'flex-end',
+        // flex: 1,
+        // flex: 1,
         width: '100%',
-        height: '100%'
+        height: '100%',
+        aspectRatio: 1/1,
+        borderRadius: 48
     },
     conversationDetailsWrapper: {
         flexGrow: 1,

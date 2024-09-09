@@ -1,7 +1,7 @@
 import Colors from '@/constants/Colors';
 import {TextInput as OriginalTextInput, TextInputProps as OriginalTextInputProps, Pressable, StyleSheet} from 'react-native';
 import { useColorScheme } from './useColorScheme';
-import { View } from './Themed';
+import { Text, View } from './Themed';
 import {View as DefaultView} from 'react-native';
 import {useState} from 'react';
 import Ionicons from '@expo/vector-icons/Ionicons';
@@ -17,38 +17,44 @@ interface TextInputProps extends OriginalTextInputProps {
     value: string,
     updateFunction: Function,
     placeholder?: string,
+    label?: string,
     trimWhitespace?: boolean
 }
 
 
-export function TextInput({value, updateFunction, trimWhitespace, placeholder, ...props}: TextInputProps) {
+export function TextInput({value, updateFunction, trimWhitespace, label, placeholder, ...props}: TextInputProps) {
     const colorScheme = useColorScheme() ?? 'light';
     return (
-        <OriginalTextInput 
-            value={value} 
-            onChangeText={text => {
-                // console.log({text})
-                if(trimWhitespace) {
-                    updateFunction(text.trim())
-                }else {
-                    updateFunction(text)
-                }
-                // updateFunction(trimWhitespace ? text.trim() : text)
-            }}
-            cursorColor={'grey'} 
-            placeholder={placeholder}
-            placeholderTextColor={'rgba(255, 255, 255, .75)'}
-            style={[
-                styles.textInput, 
-                {
-                    color: Colors[colorScheme].text, 
-                    backgroundColor: Colors[colorScheme].elevated
-                },
-                props.style
-            ]}
+        <View style={styles.textInputWrapper}>
+            <OriginalTextInput 
+                value={value} 
+                onChangeText={text => {
+                    // console.log({text})
+                    if(trimWhitespace) {
+                        updateFunction(text.trim())
+                    }else {
+                        updateFunction(text)
+                    }
+                    // updateFunction(trimWhitespace ? text.trim() : text)
+                }}
+                cursorColor={'grey'} 
+                placeholder={placeholder}
+                placeholderTextColor={'rgba(255, 255, 255, .75)'}
+                style={[
+                    styles.textInput, 
+                    {
+                        color: Colors[colorScheme].text, 
+                        backgroundColor: Colors[colorScheme].elevated
+                    },
+                    props.style
+                ]}
 
-            {...props}
-        />
+                {...props}
+            />
+            {label ? 
+                <Text style={[styles.label, {backgroundColor: Colors[colorScheme].background}]}>{label}</Text>
+            : null}
+        </View>
     )
 }
 
@@ -111,7 +117,7 @@ export function MessageInput({value, updateFunction, submitFunction, submitDisab
                     }
                 ]}
             >
-                <Ionicons name="paper-plane-outline" size={28} />
+                <Ionicons style={{transform: [{translateY: 2}, {translateX: -2}]}} name="paper-plane-outline" size={28} />
             </Pressable>
         </View>
     )
@@ -189,6 +195,11 @@ export function ImageInput({image, setter, circular, size}: ImageInputProps) {
 }
 
 const styles = StyleSheet.create({
+    textInputWrapper: {
+        // flex: 1,
+        width: '100%',
+        position: 'relative'
+    },
     textInput: {
         paddingHorizontal: 16,
         height: 44,
@@ -199,7 +210,21 @@ const styles = StyleSheet.create({
         borderRadius: 8
         // borderRadius: 24,
     },
+    label: {
+        position: 'absolute',
+        left: 8,
+        top: 4,
+        color: 'white',
+        fontWeight: 'bold',
+        fontSize: 10,
+        transform: [
+            {
+                translateY: -16,
+            }
+        ]
+    },
     messageTextInput: {
+        color: 'white',
         height: 44,
         paddingHorizontal: 16,
         borderRadius: 24,

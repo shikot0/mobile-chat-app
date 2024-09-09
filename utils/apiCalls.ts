@@ -1,5 +1,6 @@
 import { localUserStore } from "@/constants/globalState";
 import { serverRoute } from "@/constants/routes";
+import { conversations } from "@/drizzle/schema";
 
 export function fetchWithAuth(route: string, token: string | null, method?: RequestInit["method"]): Promise<Response> {
     return fetch(route, {
@@ -10,9 +11,20 @@ export function fetchWithAuth(route: string, token: string | null, method?: Requ
         }
     })
 }
+interface ConversationParticipant {
+    id: string,
+    username: string,
+    email: string,
+    phone: string,
+    conversationId: string,
+    userId: string,
+    profilePicture: string,
+    createdAt: string,
+    joinDate: string,
+}
 
 
-export async function getConversations(token: string | null) {
+export async function getConversations(token: string | null): Promise<{conversation: any, conversationParticipants: ConversationParticipant[]}[]> {
     try {
         // const {userToken} = localUserStore();
 
@@ -31,6 +43,7 @@ export async function getConversations(token: string | null) {
         
         return body.result
     }catch(error) {
-        console.log(`Error collecting user conversations: ${error}`)
+        console.log(`Error collecting user conversations: ${error}`);
+        return [];
     }
 }

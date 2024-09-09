@@ -11,11 +11,31 @@ import { PrimaryButton } from '@/components/Buttons';
 import { serverRoute } from '@/constants/routes';
 import { getConversations } from '@/utils/apiCalls';
 import { localUserStore } from '@/constants/globalState';
+import {conversations as conversationsSchema} from '@/drizzle/schema';
 import { db } from '@/drizzle/db';
+import { eq } from 'drizzle-orm';
+interface Conversation {
+  id: string,
+  conversationType: string,
+  createdBy: string,
+  createdAt: string
+}
+
+interface ConversationParticipant {
+  id: string,
+  username: string,
+  email: string,
+  phone: string,
+  conversationId: string,
+  userId: string,
+  profilePicture: string,
+  createdAt: string,
+  joinDate: string,
+}
 
 export default function ConversationsScreen() {
   const [isLoading, setIsLoading] = useState<boolean>(true);
-  const [conversations, setConversations] = useState([]);
+  const [conversations, setConversations] = useState<{conversation: Conversation, conversationParticipants: ConversationParticipant[]}[]>([]);
   const [noConversations, setNoConversations] = useState<boolean>(false);
   const {userToken} = localUserStore();
   // const messages = [
@@ -50,7 +70,21 @@ export default function ConversationsScreen() {
 
       const conversationsResult = await getConversations(userToken);
       setConversations(conversationsResult);
-      
+      // const res = await db.insert(conversationsSchema).values(conversationsResult).returning();
+      // console.log({res})
+      // for(let i = 0; i < conversationsResult.length; i++) {
+      //   // await db.insert(conversationsSchema).values(conversationsResult[i].conversationParticipants);
+      //   for(let j = 0; j < conversationsResult[i].conversationParticipants.length; j++) {
+      //     const {id, } = conversationsResult[i].conversationParticipants[j];
+      //     await db.insert(conversationsSchema).values(conversationsResult[i].conversationParticipants)
+      //   }
+      // }
+      for(let i = 0; i < conversationsResult.length; i++) {
+        const [exists] = await db.select().from(conversationsSchema).where(eq(conversationsSchema.id, conversationsResult[i].conversation.id));
+        if(!exists) await db.insert(conversationsSchema).values(conversationsResult[i].conversation);
+      }
+      const dbConversations = await db.select().from(conversationsSchema);
+      console.log({dbConversations})
       if(conversationsResult.length === 0) setNoConversations(true);
 
       setIsLoading(false);
@@ -144,8 +178,13 @@ const styles = StyleSheet.create({
     // position: 'relative',
     // flex: 1,
     // flexGrow: 1,
-    height: '100%',
-    backgroundColor: 'blue',
+    // height: '100%',
+    // backgroundColor: 'blue',
+    // borderRadius: 50,
+    // borderWidth: 1,
+    // borderStyle: 'solid',
+    // borderColor: 'red',
+    // overflow: 'hidden'
     // borderRadius: 8,
     // overflow: 'hidden', 
     // borderWidth: 1,

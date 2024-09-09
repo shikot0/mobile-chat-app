@@ -88,6 +88,8 @@ export default function ChatPage() {
             const response = await fetchWithAuth(`${serverRoute}/messages/conversations/${id}/get-messages`, userToken)
             const body = await response.json();
             console.log({body})
+            console.log(body?.returnedMessages)
+            if(body.succeeded) setMessages(body?.returnedMessages)
         } catch(error) {
             console.log(`Error collecting messages for the conversation: ${error}`)
         }

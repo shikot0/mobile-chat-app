@@ -206,12 +206,12 @@ export default function RegisterPage() {
                 </View>
                 <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={styles.form}>
                     <ImageInput image={profilePicture} setter={setProfilePicture} circular size={120}/>
-                    <TextInput value={signInUsername} updateFunction={setSignInUsername} placeholder={'Username'}/>
+                    <TextInput value={signInUsername} updateFunction={setSignInUsername} label="Username" placeholder={'Username'}/>
                     {/* <TextInput value={signInEmail} updateFunction={setSignInEmail} placeholder={'Email'}/> */}
-                    <EmailInput value={signInEmail} updateFunction={setSignInEmail} placeholder={'Email'} />
-                    <TextInput value={signInNumber} updateFunction={setSignInNumber} placeholder={'Phone number'}/>
+                    <EmailInput value={signInEmail} updateFunction={setSignInEmail} label="Email" placeholder={'Email'} />
+                    <TextInput value={signInNumber} updateFunction={setSignInNumber} label="Phone Number" placeholder={'Phone number'}/>
                     {/* <TextInput value={signInPassword} secureTextEntry={true} placeholder={'Password'} updateFunction={setSignInPassword} /> */}
-                    <PasswordInput value={signInPassword} updateFunction={setSignInPassword} placeholder={'Password'}/>
+                    <PasswordInput value={signInPassword} updateFunction={setSignInPassword} label="Password" placeholder={'Password'}/>
                     {/* <PrimaryButton>
                         <Text>Sign in</Text>
                     </PrimaryButton> */}

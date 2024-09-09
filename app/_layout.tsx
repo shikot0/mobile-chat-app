@@ -13,7 +13,6 @@ import { GestureHandlerRootView } from 'react-native-gesture-handler';
 // import { db } from '@/drizzle/db';
 import * as SecureStore from 'expo-secure-store';
 import {useMigrations} from 'drizzle-orm/expo-sqlite/migrator';
-import { messages } from '@/drizzle/schema';
 import { drizzle } from 'drizzle-orm/expo-sqlite';
 import { Redirect, Slot } from 'expo-router';
 
@@ -41,7 +40,7 @@ export default function RootLayout() {
     OpenSans: require('../assets/fonts/Open-Sans.ttf'),
     ...FontAwesome.font,
   });
-  const {success, error} = useMigrations(db, migrations);
+  const {success, error: migrationError} = useMigrations(db, migrations);
   const {isLoggedIn, setIsLoggedIn, setIsLoading, isLoading, userToken, setUserToken, setLocalUser} = localUserStore();
 
 
@@ -60,8 +59,8 @@ export default function RootLayout() {
   }, [fontsError]);
 
   useEffect(() => {
-    if(error) throw error
-  }, [error])
+    if(migrationError) throw migrationError
+  }, [migrationError])
 
   useEffect(() => {
     const savedToken = SecureStore.getItem('user-token');
