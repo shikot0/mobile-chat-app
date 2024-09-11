@@ -94,7 +94,7 @@ type MessageInputProps = TextInputProps & DefaultView['props'] & {
     submitDisabled: boolean,
 }   
 
-export function MessageInput({value, updateFunction, submitFunction, submitDisabled, ...props}: MessageInputProps) {
+export function MessageInput({value, updateFunction, trimWhitespace, placeholder, submitFunction, submitDisabled, ...props}: MessageInputProps) {
     const colorScheme = useColorScheme() ?? 'light';
 
     return (
@@ -102,10 +102,39 @@ export function MessageInput({value, updateFunction, submitFunction, submitDisab
             // style={{backgroundColor: 'transparent'}}
             {...props}
         >
-            <TextInput 
+            {/* <TextInput 
                 value={value} 
                 updateFunction={updateFunction}
-                style={[styles.messageTextInput, {backgroundColor: Colors[colorScheme].elevated, flex: 8}]}
+                // style={[styles.messageTextInput, {backgroundColor: Colors[colorScheme].elevated, flex: 8}]}
+                style={[styles.messageTextInput, {backgroundColor: Colors[colorScheme].elevated}]}
+                // style={[styles.messageTextInput, {backgroundColor: Colors[colorScheme].elevated, flex: 8}]}
+            /> */}
+            <OriginalTextInput 
+                value={value} 
+                onChangeText={text => {
+                    // console.log({text})
+                    if(trimWhitespace) {
+                        updateFunction(text.trim())
+                    }else {
+                        updateFunction(text)
+                    }
+                    // updateFunction(trimWhitespace ? text.trim() : text)
+                }}
+                cursorColor={'grey'} 
+                placeholder={placeholder}
+                placeholderTextColor={'rgba(255, 255, 255, .75)'}
+                style={[
+                    styles.textInput, 
+                    styles.messageTextInput,
+                    {
+                        color: Colors[colorScheme].text, 
+                        backgroundColor: Colors[colorScheme].elevated,
+                        flex: 8,
+                    }
+                    // props.style
+                ]}
+
+                // {...props}
             />
             <Pressable 
                 onPress={() => submitFunction()}
@@ -118,6 +147,7 @@ export function MessageInput({value, updateFunction, submitFunction, submitDisab
                 ]}
             >
                 <Ionicons style={{transform: [{translateY: 2}, {translateX: -2}]}} name="paper-plane-outline" size={28} />
+                {/* <Ionicons name="paper-plane-outline" size={28} /> */}
             </Pressable>
         </View>
     )
@@ -196,7 +226,6 @@ export function ImageInput({image, setter, circular, size}: ImageInputProps) {
 
 const styles = StyleSheet.create({
     textInputWrapper: {
-        // flex: 1,
         width: '100%',
         position: 'relative'
     },
@@ -225,7 +254,18 @@ const styles = StyleSheet.create({
     },
     messageTextInput: {
         color: 'white',
-        height: 44,
+        // height: 44,
+        height: '100%',
+        // width: '10%',
+        // width: 'auto',
+        // width: '90%',
+        // width: 'auto',
+        // width: '90%',
+        // height: 22,
+        // height: '100%',
+        // borderColor: 'red',
+        // borderStyle: 'solid',
+        // borderWidth: 1,
         paddingHorizontal: 16,
         borderRadius: 24,
     },
@@ -233,7 +273,15 @@ const styles = StyleSheet.create({
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        width: 44,
+        // flex: 1,
+        height: '100%',
+        // width: 44,
+        // flex: 2,
+        // width: '10%',
+        // flex: 1,
+        // width: '10%',
+        // flexGrow: 1,
+        // width: '100%',
         aspectRatio: 1/1,
         borderRadius: 48,
     },

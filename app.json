@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "mobile-chat-app",
-    "slug": "mobile-chat-app",
+    "name": "mssg",
+    "slug": "mssg",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
@@ -22,7 +22,13 @@
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#ffffff"
-      }
+      },
+      "permissions": [
+        "android.permission.READ_EXTERNAL_STORAGE",
+        "android.permission.WRITE_EXTERNAL_STORAGE",
+        "android.permission.ACCESS_MEDIA_LOCATION"
+      ],
+      "package": "com.mssg"
     },
     "web": {
       "bundler": "metro",
@@ -40,19 +46,7 @@
           "isAccessMediaLocationEnabled": true
         }
       ],
-      "expo-secure-store",
-      "expo-build-properties",
-      [
-        "expo-build-properties",
-        {
-          "ios": {
-            "newArchEnabled": true
-          },
-          "android": {
-            "newArchEnabled": true
-          }
-        }
-      ]
+      "expo-secure-store"
     ],
     "experiments": {
       "typedRoutes": true

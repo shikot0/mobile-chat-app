@@ -2,13 +2,29 @@ import { localUserStore } from "@/constants/globalState";
 import { serverRoute } from "@/constants/routes";
 import { conversations } from "@/drizzle/schema";
 
-export function fetchWithAuth(route: string, token: string | null, method?: RequestInit["method"]): Promise<Response> {
+// export function fetchWithAuth(route: string, token: string | null, params?: RequestInit): Promise<Response> {
+//     return fetch(route, params)
+// }
+
+type FetchWithAuthProps = {
+    route: string,
+    token: string | null,
+    method?: RequestInit["method"],
+} & {
+    method: "POST",
+    body: JSON
+}
+
+
+export function fetchWithAuth(route: string, token: string | null, method?: RequestInit["method"], body?: BodyInit): Promise<Response> {
+// export function fetchWithAuth({route, token, method}: FetchWithAuthProps): Promise<Response> {
     return fetch(route, {
         method: method ?? 'GET',
         headers: {
             'token': `${token}`,
             'Content-Type': 'application/json'
-        }
+        },
+        body: body
     })
 }
 interface ConversationParticipant {

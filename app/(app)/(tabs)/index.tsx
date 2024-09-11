@@ -122,6 +122,7 @@ export default function ConversationsScreen() {
       <FlashList 
           data={conversations}
           // style={styles.flatList}
+          // refreshControl={{key: '1', props: {enabled: true, refreshing: true}, type: 'test'}}
           contentContainerStyle={{paddingVertical: 48}}
           estimatedItemSize={86}
           // refreshControl={}

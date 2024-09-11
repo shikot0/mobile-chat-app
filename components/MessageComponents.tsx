@@ -9,6 +9,7 @@ import {Text, View} from './Themed';
 import Swipeable from 'react-native-gesture-handler/Swipeable'
 import AntDesign from "@expo/vector-icons/AntDesign";
 import { useEffect } from "react";
+import { localUserStore } from "@/constants/globalState";
 
 const {width, height} = Dimensions.get('window');
 const animationDuration = 300;
@@ -21,52 +22,92 @@ export enum MessageTypes {
 }
 
 type MessageHandlerProps = {
-    message: MessageTypeProps
+    message: MessageTypeProps,
+    user: {
+        id: string,
+        username: string,
+        profilePicture: string | null
+    }
 }
 
 type MessageTypeProps = {
-    timeSent?: string,
-    timeReceived?: string,
-} & (TextMessageProps | ImageMessageProps | AudioMessageProps) 
+    text?: string,
+    media?: string[],
+    // timeSent?: string,
+    // timeReceived?: string,
+} 
+// } & (TextMessageProps | ImageMessageProps | AudioMessageProps) 
 
+// type TextMessageProps = {
+//     type?: MessageTypes.Text
+//     // type?: 'text'
+//     text: string,
+//     sender: string,
+//     // recipient: string,
+// }
+// type ImageMessageProps = {
+//     type?: MessageTypes.Images,
+//     sender: string,
+//     imageLinks: string[]
+// }
+// type AudioMessageProps = {
+//     type?: MessageTypes.Audio,
+//     sender: string
+// }
 type TextMessageProps = {
-    type?: MessageTypes.Text
+    // type?: MessageTypes.Text
     // type?: 'text'
     text: string,
-    sender: string,
+    // sender: string,
+    user: MessageHandlerProps["user"],
     // recipient: string,
 }
 type ImageMessageProps = {
-    type?: MessageTypes.Images,
-    sender: string,
+    // type?: MessageTypes.Images,
+    // sender: string,
+    user: MessageHandlerProps["user"],
     imageLinks: string[]
 }
 type AudioMessageProps = {
-    type?: MessageTypes.Audio,
+    // type?: MessageTypes.Audio,
     sender: string
 }
 
 // export function MessageHandler({...messageProps}: MessageHandlerProps) {
-export function MessageHandler({message}: MessageHandlerProps) {
+export function MessageHandler({message, user}: MessageHandlerProps) {
     // console.log({type: message.type})
-    switch (message.type) {
-        case MessageTypes.Text:
-            // console.log('here')
-            return (
-                <TextMessage sender={message.sender} text={message.text}/>
-            ) 
-        case MessageTypes.Images:
-            // console.log('there')
-            return (
-                <ImageMessage sender={message.sender} imageLinks={message.imageLinks}/>
-            )
+    // switch (message.type) {
+    //     case MessageTypes.Text:
+    //         // console.log('here')
+    //         return (
+    //             <TextMessage sender={message.sender} text={message.text}/>
+    //         ) 
+    //     case MessageTypes.Images:
+    //         // console.log('there')
+    //         return (
+    //             <ImageMessage sender={message.sender} imageLinks={message.imageLinks}/>
+    //         )
+    // }
+    if(message.text && message.media && message.media.length !== 0) {
+        return (
+            <>
+                <ImageMessage user={user} imageLinks={message.media}/>
+                <TextMessage user={user} text={message.text}/>
+            </>
+        ) 
+    }else if(message.text) {
+        return (
+            <TextMessage user={user} text={message.text}/>
+        )
+    }if(message.media) {
+        <ImageMessage user={user} imageLinks={message.media}/>
     }
 }
 
 
 // export function TextMessage({text, timeSent, timeReceived, sender}: TextMessageProps) {
 // export function TextMessage({text, sender}: TextMessageProps) {
-export function TextMessage({text, sender}: TextMessageProps) {
+export function TextMessage({text, user}: TextMessageProps) {
     const textEnteringAnim = (values: {targetOriginY: number; targetOriginX: number}) => {
         "worklet";
 
@@ -103,6 +144,7 @@ export function TextMessage({text, sender}: TextMessageProps) {
             animations
         }
     }
+    const {localUser} = localUserStore();
 
     // const AnimatedSwipeable = Animated.createAnimatedComponent(Swipeable);
 
@@ -195,8 +237,8 @@ export function TextMessage({text, sender}: TextMessageProps) {
                 style={[
                     styles.textMessageWrapper, 
                     {
-                        backgroundColor: sender === 'me' ? 'rgba(0, 175, 200, .5)' : 'rgba(255, 255, 255, .75)',
-                        alignSelf: sender === 'me' ? "flex-end": 'flex-start'
+                        backgroundColor: user.id === localUser?.id ? 'rgba(0, 175, 200, .5)' : 'rgba(255, 255, 255, .75)',
+                        alignSelf: user.id === localUser?.id ? "flex-end": 'flex-start'
                     }
                 ]}
             >
@@ -204,7 +246,7 @@ export function TextMessage({text, sender}: TextMessageProps) {
                 <Text
                     style={
                         {
-                            color: sender === 'me' ? 'white' : 'black'
+                            color: localUser?.id === user.id ? 'white' : 'black'
                         }
                     }
                 >
@@ -215,7 +257,7 @@ export function TextMessage({text, sender}: TextMessageProps) {
     )
 }
 
-export function ImageMessage({sender, imageLinks}: ImageMessageProps) {
+export function ImageMessage({user, imageLinks}: ImageMessageProps) {
     const images = [require(`../assets/testImages/test_image_1.jpg`), require(`../assets/testImages/test_image_2.jpg`), require(`../assets/testImages/test_image_3.jpg`), require(`../assets/testImages/test_image_4.jpg`), require(`../assets/testImages/test_image_5.jpg`), require(`../assets/testImages/test_image_6.jpg`), require(`../assets/testImages/test_image_7.jpg`), require(`../assets/testImages/test_image_8.jpg`), require(`../assets/testImages/test_image_9.jpg`), require(`../assets/testImages/test_image_10.jpg`)]
     const selectedIndexes: number[] = [];
     function getRandomIndex(arr: any[]) {
@@ -228,6 +270,8 @@ export function ImageMessage({sender, imageLinks}: ImageMessageProps) {
         // return Math.floor(Math.random() * images.length);
         return index;
     }
+
+    const {localUser} = localUserStore();
     
 
     const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
@@ -285,10 +329,10 @@ export function ImageMessage({sender, imageLinks}: ImageMessageProps) {
                     style={[
                         styles.imageMessageWrapper,
                         {
-                            alignSelf: sender === 'me' ? "flex-end": 'flex-start'
+                            alignSelf: localUser?.id === user.id ? "flex-end": 'flex-start'
                         },
                         {
-                            translateX: imageLinks.length === 1 ? 0 : sender === 'me' ? -10 : 10
+                            translateX: imageLinks.length === 1 ? 0 : localUser?.id === user.id ? -10 : 10
                         }
                         // {
                         //     alignItems: sender === 'me' ? "flex-start": 'flex-end'
@@ -347,6 +391,7 @@ const styles = StyleSheet.create({
         // backgroundColor: 'rgba(0, 175, 200, .5)',
         paddingVertical: 8,
         paddingHorizontal: 16,
+        marginBottom: 4,
         
         // borderWidth: 1,
         // borderStyle: 'solid',

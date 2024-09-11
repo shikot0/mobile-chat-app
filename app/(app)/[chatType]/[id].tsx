@@ -13,6 +13,7 @@ import {LinearGradient} from 'expo-linear-gradient';
 import {FlashList} from '@shopify/flash-list';
 import { serverRoute } from "@/constants/routes";
 import { fetchWithAuth } from "@/utils/apiCalls";
+
 import { localUserStore } from "@/constants/globalState";
 
 // interface ChatPageProps {
@@ -28,7 +29,7 @@ const {width, height} = Dimensions.get('window');
 export default function ChatPage() {
     const {id} = useLocalSearchParams<{id: string, chatType: string}>();
     const [newMessage, setNewMessage] = useState<string>('');
-    const [messages, setMessages] = useState([]);
+    const [messages, setMessages] = useState<any[]>([]);
     const {userToken} = localUserStore();
     // const [messages, setMessages] = useState<any[]>([
     //     {   
@@ -88,8 +89,8 @@ export default function ChatPage() {
             const response = await fetchWithAuth(`${serverRoute}/messages/conversations/${id}/get-messages`, userToken)
             const body = await response.json();
             console.log({body})
-            console.log(body?.returnedMessages)
-            if(body.succeeded) setMessages(body?.returnedMessages)
+            console.log(body?.result)
+            if(body.succeeded) setMessages(body?.result)
         } catch(error) {
             console.log(`Error collecting messages for the conversation: ${error}`)
         }
@@ -110,13 +111,20 @@ export default function ChatPage() {
     // }, [messages])
 
     async function addNewMessage() {
-        console.log('adding new message!')
-        // setMessages(prev => {
-        //     return [...prev, {type: 'text', sender: 'me', text: newMessage}]
-        // });
-        setNewMessage('')
-        // flatListRef?.scrollToEnd({animated: true})
-        await playSound();
+        try {
+            console.log('adding new message!')
+            const res = await fetchWithAuth(`${serverRoute}/messages/conversations/${id}/post-message`, userToken, "POST", JSON.stringify({text: newMessage}));
+            const body = await res.json();
+            console.log({body})
+            // setMessages(prev => {
+            //     return [...prev, {type: 'text', sender: 'me', text: newMessage}]
+            // });
+            setNewMessage('')
+            // flatListRef?.scrollToEnd({animated: true})
+            await playSound();
+        }catch(error) {
+            console.log(`Error sending message: ${error}`)
+        }
     }
 
     const animationDuration = 100;
@@ -191,7 +199,8 @@ export default function ChatPage() {
             <LinearGradient
                 // colors={['rgba(0, 0, 0, .25)', 'transparent', 'rgba(0, 0, 0, .25)']}
                 // colors={['rgba(0, 0, 0, .25)', 'transparent', 'rgba(0, 0, 0, .25)']}
-                colors={['rgba(0, 0, 0, .15)', 'transparent', 'rgba(0, 0, 0, .15)']}
+                // colors={['rgba(0, 0, 0, .15)', 'transparent', 'rgba(0, 0, 0, .15)']}
+                colors={['rgba(0, 0, 0, .1)', 'transparent', 'rgba(0, 0, 0, .1)']}
                 // colors={['red', 'transparent', 'red']}
                 style={styles.linearGradient}
             />
@@ -206,6 +215,13 @@ export default function ChatPage() {
                     data={messages}
                     // style={styles.messagesWrapper} 
                     // contentContainerStyle={{padding: 8, gap: 8}}
+                    
+                    // refreshControl={{key: '1', props: 'test', type: () => {
+                    //     return <Text>test</Text>
+                    // }}}
+                    // refreshControl={({}) => {
+                    //     return <Text>test</Text>
+                    // }}
                     contentContainerStyle={{padding: 8}}
                     // estimatedItemSize={messages.length}
                     // ref={(ref) => {
@@ -215,7 +231,7 @@ export default function ChatPage() {
                     estimatedItemSize={91}
                     renderItem={({item, index}) => {
                         return (
-                            <MessageHandler message={item} />
+                            <MessageHandler message={item.message} user={item.user}/>
                         )
                     }}
                 />
@@ -242,10 +258,11 @@ export default function ChatPage() {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
+        // width: '100%',
         position: 'relative'
     },
     chatWrapper: {
-        flex: 12,
+        flex: 13,
         justifyContent: 'flex-end',
         position: 'relative',
         // borderWidth: 1,
@@ -299,15 +316,26 @@ const styles = StyleSheet.create({
     },
     messageInputWrapper: {
         position: 'relative',
-        flex: 1,
+        // width: '100%',
+        // flex: 1,
+        // flexDirection: 'row',
+        // alignItems: 'center',
+        // height: '100%',
+        // flex: 1,
+        height: 58,
         flexDirection: 'row',
         alignItems: 'center',
+        // justifyContent: 'center',
+        justifyContent: 'space-between',
         paddingVertical: 8,
         // backgroundColor: 'transparent',
-        paddingHorizontal: 8,
+        // paddingHorizontal: 8,
+        paddingHorizontal: 12,
         gap: 8,
+        // gap: 0,
+
         // borderWidth: 1,
-        // borderColor: 'red',
+        // borderColor: 'blue',
         // borderStyle: 'solid'
     },
     textInput: {

@@ -15,6 +15,7 @@ import * as SecureStore from 'expo-secure-store';
 import {useMigrations} from 'drizzle-orm/expo-sqlite/migrator';
 import { drizzle } from 'drizzle-orm/expo-sqlite';
 import { Redirect, Slot } from 'expo-router';
+import { storage } from '@/utils/mmkv';
 
 const expoDb = SQLite.openDatabaseSync('app.db');
 const db = drizzle(expoDb)
@@ -65,6 +66,10 @@ export default function RootLayout() {
   useEffect(() => {
     const savedToken = SecureStore.getItem('user-token');
     const localUser = SecureStore.getItem('local-user');
+    
+    // const savedToken = storage.getString('user-token');
+    // const localUser = storage.getString('local-user');
+    // console.log({savedToken, localUser})
     // const savedToken = undefined;
     // const localUser = undefined;
 
