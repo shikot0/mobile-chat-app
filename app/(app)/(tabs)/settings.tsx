@@ -13,7 +13,7 @@ import { localUserStore } from '@/constants/globalState';
 import { Redirect, useRouter } from 'expo-router';
 import { DangerButton } from '@/components/Buttons';
 import * as SecureStore from 'expo-secure-store';
-import { LocalUser } from '@/utils/saveToLocal';
+import { LocalUser } from '@/utils/handleLocalData';
 
 
 export default function SettingsScreen() {

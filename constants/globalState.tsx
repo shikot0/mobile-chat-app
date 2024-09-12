@@ -1,4 +1,4 @@
-import { LocalUser } from '@/utils/saveToLocal';
+import { LocalUser } from '@/utils/handleLocalData';
 import {create} from 'zustand';
 
 interface LocalUserStoreType {

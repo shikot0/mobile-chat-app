@@ -16,6 +16,7 @@ import {useMigrations} from 'drizzle-orm/expo-sqlite/migrator';
 import { drizzle } from 'drizzle-orm/expo-sqlite';
 import { Redirect, Slot } from 'expo-router';
 import { storage } from '@/utils/mmkv';
+import { getLocalValue} from '@/utils/handleLocalData';
 
 const expoDb = SQLite.openDatabaseSync('app.db');
 const db = drizzle(expoDb)
@@ -63,36 +64,77 @@ export default function RootLayout() {
     if(migrationError) throw migrationError
   }, [migrationError])
 
-  useEffect(() => {
-    const savedToken = SecureStore.getItem('user-token');
-    const localUser = SecureStore.getItem('local-user');
-    
-    // const savedToken = storage.getString('user-token');
-    // const localUser = storage.getString('local-user');
-    // console.log({savedToken, localUser})
-    // const savedToken = undefined;
-    // const localUser = undefined;
-
-    // console.log({savedToken, localUser})
-    // console.log({savedToken})
-    
-    if(savedToken && localUser) {
-      // setTimeout(() => {
-        setUserToken(savedToken);
-        setLocalUser(JSON.parse(localUser));
-        setIsLoggedIn(true);
-        // setIsLoading(false),
-        setIsLoading(false);
-      // }, 10000)
-    }else {
-      setIsLoggedIn(false);
-      setIsLoading(false)
+  async function authenticate() {
+    try {
+      // await SecureStore.deleteItemAsync('user-token');
+      // await SecureStore.deleteItemAsync('local-user');
+      
+      const savedToken = await getLocalValue('user-token');
+      const localUser = await getLocalValue('local-user');
+      console.log({savedToken, localUser})
+          
+      // const savedToken = storage.getString('user-token');
+      // const localUser = storage.getString('local-user');
+      // console.log({savedToken, localUser})
+      // const savedToken = undefined;
+      // const localUser = undefined;
+      // console.log({savedToken, localUser})
+      // console.log({savedToken})
+          
+      if(savedToken && localUser) {
+        // setTimeout(() => {
+          setUserToken(savedToken);
+          setLocalUser(localUser);
+          setIsLoggedIn(true);
+          // setIsLoading(false),
+          setIsLoading(false);
+        // }, 10000)
+      }else {
+        setIsLoggedIn(false);
+        setIsLoading(false)
+      }
+    }catch(error) {
+      console.log(`Error authenticating user: ${error}`)
     }
+  }
+
+  // useEffect(() => {
+  //   // const savedToken = SecureStore.getItem('user-token');
+  //   // const localUser = SecureStore.getItem('local-user');
+  //   const savedToken = await getLocalValue('user-token');
+  //   const localUser = await getLocalValue('local-user');
+
+  //   console.log({savedToken, localUser})
+    
+  //   // const savedToken = storage.getString('user-token');
+  //   // const localUser = storage.getString('local-user');
+  //   // console.log({savedToken, localUser})
+  //   // const savedToken = undefined;
+  //   // const localUser = undefined;
+
+  //   // console.log({savedToken, localUser})
+  //   // console.log({savedToken})
+    
+  //   if(savedToken && localUser) {
+  //     // setTimeout(() => {
+  //       setUserToken(savedToken);
+  //       setLocalUser(JSON.parse(localUser));
+  //       setIsLoggedIn(true);
+  //       // setIsLoading(false),
+  //       setIsLoading(false);
+  //     // }, 10000)
+  //   }else {
+  //     setIsLoggedIn(false);
+  //     setIsLoading(false)
+  //   }
+  // }, [])
+  useEffect(() => {
+    authenticate();    
   }, [])
 
-  useEffect(() => {
-    console.log({isLoggedIn})
-  }, [isLoggedIn])
+  // useEffect(() => {
+  //   console.log({isLoggedIn})
+  // }, [isLoggedIn])
 
   // useEffect(() => {
   //   if (fontsLoaded) {

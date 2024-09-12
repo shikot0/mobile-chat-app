@@ -5,7 +5,7 @@ import { Text, View, ScrollView } from "@/components/Themed";
 import Colors from "@/constants/Colors";
 import { localUserStore } from "@/constants/globalState";
 import { serverRoute } from "@/constants/routes";
-import { addLocalToken, addLocalUser } from "@/utils/saveToLocal";
+import { addLocalToken, addLocalUser, setLocalValue } from "@/utils/handleLocalData";
 import { ImagePickerAsset } from "expo-image-picker";
 import { useRouter } from "expo-router";
 import { useState, useEffect } from "react";
@@ -100,8 +100,10 @@ export default function RegisterPage() {
             if(succeeded) {
                 const {user, token} = body;
 
-                setLocalUser(user);
-                setUserToken(token);
+                // setLocalUser(user);
+                // setUserToken(token);
+                setLocalValue('local-user', user);
+                setLocalValue('user-token', token);
                 setIsLoggedIn(true);
 
                 addLocalUser(user);
@@ -136,8 +138,10 @@ export default function RegisterPage() {
             if(succeeded) {
                 const {user, token} = body;
 
-                setLocalUser(user);
-                setUserToken(token);
+                // setLocalUser(user);
+                // setUserToken(token);
+                setLocalValue('local-user', user);
+                setLocalValue('user-token', token);
                 setIsLoggedIn(true);
 
                 addLocalUser(user);

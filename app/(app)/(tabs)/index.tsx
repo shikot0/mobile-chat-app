@@ -1,4 +1,4 @@
-import { ActivityIndicator, FlatList, StyleSheet } from 'react-native';
+import { ActivityIndicator, FlatList, RefreshControl, StyleSheet } from 'react-native';
 
 import { Text, View } from '@/components/Themed';
 import { ListHeading } from '@/components/StyledText';
@@ -37,6 +37,7 @@ export default function ConversationsScreen() {
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [conversations, setConversations] = useState<{conversation: Conversation, conversationParticipants: ConversationParticipant[]}[]>([]);
   const [noConversations, setNoConversations] = useState<boolean>(false);
+  const [isRefreshing, setIsRefreshing] = useState<boolean>(false);
   const {userToken} = localUserStore();
   // const messages = [
   //   {
@@ -69,6 +70,7 @@ export default function ConversationsScreen() {
       setIsLoading(true);
 
       const conversationsResult = await getConversations(userToken);
+      console.log({userToken, conversationsResult})
       setConversations(conversationsResult);
       // const res = await db.insert(conversationsSchema).values(conversationsResult).returning();
       // console.log({res})
@@ -115,7 +117,14 @@ export default function ConversationsScreen() {
   // useEffect(() => {
   //   getConversations(userToken)
   // }, [])
+
+  async function handleRefresh() {
+    setIsRefreshing(true);
+    await loadConversations();    
+    setIsRefreshing(false);
+  }
  
+  console.log({conversations})
   return (
     <View style={styles.container}>
 
@@ -126,6 +135,15 @@ export default function ConversationsScreen() {
           contentContainerStyle={{paddingVertical: 48}}
           estimatedItemSize={86}
           // refreshControl={}
+          refreshControl={
+            <RefreshControl
+              progressBackgroundColor={Colors[colorScheme].elevated}
+              colors={[Colors[colorScheme].text]}
+              refreshing={isRefreshing}
+              progressViewOffset={100}
+              onRefresh={handleRefresh}
+            />
+          }
           ListHeaderComponent={() => <ListHeading>Messages</ListHeading>}
           ListEmptyComponent={() => {
               if(isLoading) {
