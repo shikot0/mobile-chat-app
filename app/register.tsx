@@ -100,14 +100,14 @@ export default function RegisterPage() {
             if(succeeded) {
                 const {user, token} = body;
 
-                // setLocalUser(user);
-                // setUserToken(token);
+                setLocalUser(user);
+                setUserToken(token);
                 setLocalValue('local-user', user);
                 setLocalValue('user-token', token);
                 setIsLoggedIn(true);
 
-                addLocalUser(user);
-                addLocalToken(token);
+                // addLocalUser(user);
+                // addLocalToken(token);
                 router.navigate('./(app)')
                 // console.log({isLoggedIn, localUser, userToken});
             }
@@ -138,14 +138,14 @@ export default function RegisterPage() {
             if(succeeded) {
                 const {user, token} = body;
 
-                // setLocalUser(user);
-                // setUserToken(token);
+                setLocalUser(user);
+                setUserToken(token);
                 setLocalValue('local-user', user);
                 setLocalValue('user-token', token);
                 setIsLoggedIn(true);
 
-                addLocalUser(user);
-                addLocalToken(token);
+                // addLocalUser(user);
+                // addLocalToken(token);
                 router.navigate('./(app)')
 
                 // console.log({isLoggedIn, localUser, userToken});

@@ -43,7 +43,7 @@ interface ConversationParticipant {
 export async function getConversations(token: string | null): Promise<{conversation: any, conversationParticipants: ConversationParticipant[]}[]> {
     try {
         // const {userToken} = localUserStore();
-
+        // console.log({serverRoute})
         const response = await fetch(`${serverRoute}/messages/conversations`, {
             method: 'GET',
             headers: {
@@ -53,7 +53,7 @@ export async function getConversations(token: string | null): Promise<{conversat
             }
         })
         const body = await response.json();
-        console.log({apiCallBody: body})
+        // console.log({apiCallBody: body})
 
         if(!body.succeeded) return [];
         

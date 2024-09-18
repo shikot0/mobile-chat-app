@@ -36,7 +36,7 @@ export function addLocalToken(token: string) {
 export async function getLocalValue(key: string) {
     const isMobile = Platform.OS !== "windows" && Platform.OS !== "macos";
     
-    console.log({isMobile})
+    // console.log({isMobile})
     // console.log({testString: JSON.parse("testString")})
 
     try {

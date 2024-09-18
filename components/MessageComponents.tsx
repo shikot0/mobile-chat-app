@@ -1,5 +1,5 @@
 // import { Image, Dimensions, StyleSheet, Pressable } from "react-native";
-import { Dimensions, StyleSheet, Pressable } from "react-native";
+import { Dimensions, StyleSheet, Pressable, useColorScheme } from "react-native";
 import {Image} from 'expo-image'
 import Animated, { withTiming, Easing, useAnimatedStyle, interpolate, useSharedValue, SharedValue } from 'react-native-reanimated';
 import { Link } from "expo-router";
@@ -10,6 +10,7 @@ import Swipeable from 'react-native-gesture-handler/Swipeable'
 import AntDesign from "@expo/vector-icons/AntDesign";
 import { useEffect } from "react";
 import { localUserStore } from "@/constants/globalState";
+import Colors from "@/constants/Colors";
 
 const {width, height} = Dimensions.get('window');
 const animationDuration = 300;
@@ -108,35 +109,73 @@ export function MessageHandler({message, user}: MessageHandlerProps) {
 // export function TextMessage({text, timeSent, timeReceived, sender}: TextMessageProps) {
 // export function TextMessage({text, sender}: TextMessageProps) {
 export function TextMessage({text, user}: TextMessageProps) {
+    // const textEnteringAnim = (values: {targetOriginY: number; targetOriginX: number}) => {
+    //     "worklet";
+
+    //     const animations = {
+    //         opacity: withTiming(1, {
+    //             duration: animationDuration
+    //         }),
+    //         originX: withTiming(values.targetOriginX, {
+    //             duration: animationDuration/2,
+    //             easing: Easing.elastic(1)
+    //         }),
+    //         scaleX: withTiming(1, {
+    //             duration: animationDuration,
+    //             easing: Easing.elastic(2),
+    //             // easing: Easing.linear
+    //         }),
+    //         scaleY: withTiming(1, {
+    //             duration: animationDuration,
+    //             easing: Easing.elastic(2),
+    //             // easing: Easing.linear
+    //         })
+    //     };
+
+    //     const initialValues = {
+    //         // originY: height,
+    //         originX: width + 50,
+    //         scaleX: .75,
+    //         scaleY: .75,
+    //         opacity: .5,
+    //     }  
+        
+    //     return {
+    //         initialValues,
+    //         animations
+    //     }
+    // }
     const textEnteringAnim = (values: {targetOriginY: number; targetOriginX: number}) => {
         "worklet";
 
         const animations = {
-            opacity: withTiming(1, {
-                duration: animationDuration
-            }),
+            // opacity: withTiming(1, {
+            //     duration: animationDuration
+            // }),
             originX: withTiming(values.targetOriginX, {
-                duration: animationDuration/2,
-                easing: Easing.elastic(1)
-            }),
-            scaleX: withTiming(1, {
                 duration: animationDuration,
-                easing: Easing.elastic(2),
-                // easing: Easing.linear
+                // easing: Easing.bounce(4)
+                // duration: animationDuration/2,
+                // easing: Easing.elastic(1)
             }),
-            scaleY: withTiming(1, {
-                duration: animationDuration,
-                easing: Easing.elastic(2),
-                // easing: Easing.linear
-            })
+            // scaleX: withTiming(1, {
+            //     duration: animationDuration,
+            //     easing: Easing.elastic(2),
+            //     // easing: Easing.linear
+            // }),
+            // scaleY: withTiming(1, {
+            //     duration: animationDuration,
+            //     easing: Easing.elastic(2),
+            //     // easing: Easing.linear
+            // })
         };
 
         const initialValues = {
             // originY: height,
-            originX: width + 50,
-            scaleX: .75,
-            scaleY: .75,
-            opacity: .5,
+            originX: user.id !== localUser?.id ? -50 : width + 50,
+            // scaleX: .75,
+            // scaleY: .75,
+            // opacity: .5,
         }  
         
         return {
@@ -145,6 +184,7 @@ export function TextMessage({text, user}: TextMessageProps) {
         }
     }
     const {localUser} = localUserStore();
+    const colorScheme = useColorScheme() ?? 'dark';
 
     // const AnimatedSwipeable = Animated.createAnimatedComponent(Swipeable);
 
@@ -172,88 +212,110 @@ export function TextMessage({text, user}: TextMessageProps) {
         //     </Text>
         // </Animated.View>
 
-        <Swipeable
-            // entering={SlideInRight}
-            // entering={textEnteringAnim}
-            overshootFriction={8}
-            overshootLeft={false}
+        // <Swipeable
+        //     // entering={SlideInRight}
+        //     // entering={textEnteringAnim}
+        //     overshootFriction={8}
+        //     overshootLeft={false}
             
-            renderRightActions={(progress, dragX) => {
-            // renderLeftActions={(progress: SharedValue<number>, dragX: SharedValue<number>) => {
-                const AnimatedIcon = Animated.createAnimatedComponent(AntDesign);
-                // const animatedStyle = useAnimatedStyle(() => {
-                //     const opacity = interpolate(progress, [0, 1], [0, 1], 'clamp')
-                // })
-                // const opacity = progress.interpolate({
-                //     inputRange: [0, 1],
-                //     outputRange: [0, 1],
-                //     extrapolate: "clamp"
-                // })
-                // let opacity = dragX.interpolate({
-                //     inputRange: [0, 25],
-                //     outputRange: [0, 1],
-                // })
-                // const opacity = interpolate(dragX.removeListener, [0, 25], [0, 1], 'clamp')
-                // console.log({opacity})
-                // useEffect(() => {
-                //     console.log({opacity})
-                // }, [opacity])
+        //     renderRightActions={(progress, dragX) => {
+        //     // renderLeftActions={(progress: SharedValue<number>, dragX: SharedValue<number>) => {
+        //         const AnimatedIcon = Animated.createAnimatedComponent(AntDesign);
+        //         // const animatedStyle = useAnimatedStyle(() => {
+        //         //     const opacity = interpolate(progress, [0, 1], [0, 1], 'clamp')
+        //         // })
+        //         // const opacity = progress.interpolate({
+        //         //     inputRange: [0, 1],
+        //         //     outputRange: [0, 1],
+        //         //     extrapolate: "clamp"
+        //         // })
+        //         // let opacity = dragX.interpolate({
+        //         //     inputRange: [0, 25],
+        //         //     outputRange: [0, 1],
+        //         // })
+        //         // const opacity = interpolate(dragX.removeListener, [0, 25], [0, 1], 'clamp')
+        //         // console.log({opacity})
+        //         // useEffect(() => {
+        //         //     console.log({opacity})
+        //         // }, [opacity])
 
-                // drag.interpolate({
-                //     inputRange: []
-                // })
+        //         // drag.interpolate({
+        //         //     inputRange: []
+        //         // })
 
-                // const animatedStyle = useAnimatedStyle(() => {
-                //     return {
-                //         opacity: progress.
-                //     }
-                // })
+        //         // const animatedStyle = useAnimatedStyle(() => {
+        //         //     return {
+        //         //         opacity: progress.
+        //         //     }
+        //         // })
 
-                return (
-                    // <View><Text>test</Text></View>
-                    <View
-                        style={[
-                            {
-                                width: 50,
-                                alignItems: 'center',
-                                justifyContent: 'center',
-                                // borderStyle: 'solid',
-                                // borderWidth: 1,
-                                // borderColor: 'white'
-                                // opacity: progress
-                            },
-                            // {
-                            //     opacity: opacity
-                            // }
-                            // animatedStyle
-                        ]}
-                    >
-                        <AnimatedIcon name="arrowleft" color="white" size={25}/>
-                    </View>
-                )
-            }}
+        //         return (
+        //             // <View><Text>test</Text></View>
+        //             <View
+        //                 style={[
+        //                     {
+        //                         width: 50,
+        //                         alignItems: 'center',
+        //                         justifyContent: 'center',
+        //                         // borderStyle: 'solid',
+        //                         // borderWidth: 1,
+        //                         // borderColor: 'white'
+        //                         // opacity: progress
+        //                     },
+        //                     // {
+        //                     //     opacity: opacity
+        //                     // }
+        //                     // animatedStyle
+        //                 ]}
+        //             >
+        //                 <AnimatedIcon name="arrowleft" color="white" size={25}/>
+        //             </View>
+        //         )
+        //     }}
+        // >
+        //     <View             
+        //         style={[
+        //             styles.textMessageWrapper, 
+        //             {
+        //                 // backgroundColor: user.id === localUser?.id ? 'rgba(0, 175, 200, .5)' : 'rgba(255, 255, 255, .75)',
+        //                 backgroundColor: user.id === localUser?.id ? 'rgba(0, 175, 200, .5)' : Colors[colorScheme].tint,
+        //                 alignSelf: user.id === localUser?.id ? "flex-end": 'flex-start'
+        //             }
+        //         ]}
+        //     >
+
+        //         <Text
+        //             style={
+        //                 {
+        //                     color: localUser?.id === user.id ? 'white' : 'black'
+        //                 }
+        //             }
+        //         >
+        //             {text}
+        //         </Text>
+        //     </View>
+        // </Swipeable>
+        <Animated.View   
+            entering={textEnteringAnim}          
+            style={[
+                styles.textMessageWrapper, 
+                {
+                    // backgroundColor: user.id === localUser?.id ? 'rgba(0, 175, 200, .5)' : 'rgba(255, 255, 255, .75)',
+                    backgroundColor: user.id === localUser?.id ? 'rgba(0, 175, 200, .5)' : Colors[colorScheme].tint,
+                    alignSelf: user.id === localUser?.id ? "flex-end": 'flex-start'
+                }
+            ]}
         >
-            <View             
-                style={[
-                    styles.textMessageWrapper, 
+            <Text
+                style={
                     {
-                        backgroundColor: user.id === localUser?.id ? 'rgba(0, 175, 200, .5)' : 'rgba(255, 255, 255, .75)',
-                        alignSelf: user.id === localUser?.id ? "flex-end": 'flex-start'
+                        color: localUser?.id === user.id ? 'white' : 'black'
                     }
-                ]}
+                }
             >
-
-                <Text
-                    style={
-                        {
-                            color: localUser?.id === user.id ? 'white' : 'black'
-                        }
-                    }
-                >
-                    {text}
-                </Text>
-            </View>
-        </Swipeable>
+                {text}
+            </Text>
+        </Animated.View>
     )
 }
 

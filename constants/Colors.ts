@@ -16,7 +16,8 @@ export default {
     tabIconSelected: tintColorLight,
   },
   dark: {
-    text: '#fff',
+    // text: '#fff',
+    text: '#rgba(255, 255, 255, .85)',
     secondaryText: '#ddd',
     background: '#121212',
     elevated: '#222',

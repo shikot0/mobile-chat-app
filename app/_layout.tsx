@@ -71,7 +71,7 @@ export default function RootLayout() {
       
       const savedToken = await getLocalValue('user-token');
       const localUser = await getLocalValue('local-user');
-      console.log({savedToken, localUser})
+      // console.log({savedToken, localUser})
           
       // const savedToken = storage.getString('user-token');
       // const localUser = storage.getString('local-user');
