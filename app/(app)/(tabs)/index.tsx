@@ -135,7 +135,8 @@ export default function ConversationsScreen() {
           data={conversations}
           // style={styles.flatList}
           // refreshControl={{key: '1', props: {enabled: true, refreshing: true}, type: 'test'}}
-          contentContainerStyle={{paddingVertical: 48}}
+          // contentContainerStyle={{paddingVertical: 48}}
+          contentContainerStyle={{paddingVertical: 20}}
           estimatedItemSize={86}
           // refreshControl={}
           refreshControl={

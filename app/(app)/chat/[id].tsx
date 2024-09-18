@@ -1,11 +1,11 @@
 import { View, Text } from "@/components/Themed";
 import Ionicons from "@expo/vector-icons/Ionicons";
-import { Stack, useLocalSearchParams, useRouter } from "expo-router";
+import { Redirect, Stack, useLocalSearchParams, useRouter } from "expo-router";
 import {useEffect, useRef, useState} from 'react';
 import {Tabs} from 'expo-router';
 import {Audio} from 'expo-av';
 import Animated, { SlideInRight, withTiming, Easing, withSpring } from 'react-native-reanimated';
-import { StyleSheet, Image, TextInput, Pressable, FlatList, NativeSyntheticEvent, TextInputTextInputEventData, useColorScheme, Dimensions, ScrollView, KeyboardAvoidingView, Platform } from "react-native";
+import { StyleSheet, Image, TextInput, Pressable, FlatList, NativeSyntheticEvent, TextInputTextInputEventData, useColorScheme, Dimensions, ScrollView, KeyboardAvoidingView, Platform, ActivityIndicator } from "react-native";
 import Colors from "@/constants/Colors";
 import { MessageInput } from "@/components/Inputs";
 import { MessageHandler } from "@/components/MessageComponents";
@@ -52,10 +52,13 @@ type ConversationInfo = {
 // export default function ChatPage({params: {type, id}}: ChatPageProps) {
 export default function ChatPage() {
     const {id} = useLocalSearchParams<{id: string, chatType: string}>();
+    console.log({id})
     const [newMessage, setNewMessage] = useState<string>('');
     const [messages, setMessages] = useState<any[]>([]);
     const [conversationInfo, setConversationInfo] = useState<ConversationInfo>();
+    const [isLoading, setIsLoading] = useState<boolean>(true);
     const {localUser, userToken} = localUserStore();
+    const colorScheme = useColorScheme() ?? 'dark';
     // const socket = useRef<Socket<DefaultEventsMap, DefaultEventsMap>>();
     const socket = useRef<Socket>();
     // const [messages, setMessages] = useState<any[]>([
@@ -155,6 +158,7 @@ export default function ChatPage() {
             const body = await response.json();
             if(body.succeeded) {
                 const {conversation, conversationParticipants} = body.result;
+                console.log({conversation, conversationParticipants})
                 // console.log({result: body.result})
                 const reducedParticipants = conversationParticipants.reduce((acc: ConversationParticipant[], item: ConversationParticipant) => {
                     // const {id, username, phoneNumber, email} = item;
@@ -170,11 +174,32 @@ export default function ChatPage() {
             console.log(`Error collecting conversation info: ${error}`)
         }
     }
+    
+    async function loadChat() {
+        setIsLoading(true);
+        await getMessages();
+        await getConversationData();
+        setIsLoading(false);
+    }
 
+    // useEffect(() => {
+    //     getMessages();
+    //     getConversationData();
+    // }, [])
     useEffect(() => {
-        getMessages();
-        getConversationData();
+        loadChat();
     }, [])
+
+    if(isLoading) {
+        return <ActivityIndicator size={50} style={{position: 'absolute', top: '50%', left: '50%', transform: [{translateX: -25}, {translateY: -25}]}} color={Colors[colorScheme].primary} />
+    }
+
+    if(!conversationInfo) {
+        return <Redirect href={'..'} />
+    }
+    // if(!conversationInfo) {
+    //     return <Redirect href={'..'} />
+    // }
 
     // useEffect(() => {
     //     if(conversationInfo) return useRouter().back();
@@ -318,7 +343,6 @@ export default function ChatPage() {
     }
 
 
-    const colorScheme = useColorScheme() ?? 'light';
     return (
         <View style={styles.container}>
             {/* <Stack.Screen options={{ title: id }} /> */}
@@ -330,14 +354,14 @@ export default function ChatPage() {
                     header: () => {
                         return (
                             <HeaderElement
-                                type={conversationInfo && conversationInfo.users.length > 2 ? HeaderElementTypes.Group: HeaderElementTypes.OneOnOne}
-                                users={conversationInfo?.users}
+                                type={conversationInfo.users.length > 2 ? HeaderElementTypes.Group: HeaderElementTypes.OneOnOne}
+                                users={conversationInfo.users}
                             />
                         )
                     }
                 }} 
             />
-            <StatusBar translucent={false} backgroundColor="black" />
+            {/* <StatusBar translucent={false} backgroundColor="black" /> */}
             {/* <StatusBar translucent={false} backgroundColor="white" style={"dark"} /> */}
             <LinearGradient
                 // colors={['rgba(0, 0, 0, .25)', 'transparent', 'rgba(0, 0, 0, .25)']}

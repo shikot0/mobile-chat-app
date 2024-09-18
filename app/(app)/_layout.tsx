@@ -49,7 +49,7 @@ export default function Layout() {
     // }, [isLoading, isLoggedIn])
     return (
         // <Stack screenOptions={{headerShown: false}}>
-        <Stack>
+        <Stack screenOptions={{statusBarTranslucent: false, statusBarColor: 'black'}}>
           {/* <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
           <Stack.Screen name="[chatType]" options={{ animation: 'ios', headerShown: false}} />
           <Stack.Screen name="modal" options={{ gestureEnabled: true, presentation: 'modal' }} />   */}
@@ -57,7 +57,11 @@ export default function Layout() {
           <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
           <Stack.Screen name="modal" options={{ gestureEnabled: true, presentation: 'modal' }} />
           <Stack.Screen name="new-chat" options={{presentation: 'modal', title:"New chat", animation: 'fade_from_bottom', fullScreenGestureEnabled: true, gestureEnabled: true,}}/>
-          <Stack.Screen name="[chatType]" options={{ animation: 'ios', headerShown: false}} />
+          {/* <Stack.Screen name="chat" options={{ animation: 'ios', headerShown: false}} /> */}
+          {/* <Stack.Screen name="chat" options={{ animation: 'slide_from_bottom', animationTypeForReplace: 'push', headerShown: false}} /> */}
+          {/* <Stack.Screen name="chat" options={{ animation: 'ios', headerShown: false}} /> */}
+          {/* <Stack.Screen name="chat" options={{ presentation: 'transparentModal', animation: 'ios', headerShown: false}} /> */}
+          <Stack.Screen name="chat" options={{ presentation: 'transparentModal', animation: 'slide_from_bottom', headerShown: false}} />
         </Stack>
     )
 }

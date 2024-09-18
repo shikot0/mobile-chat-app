@@ -50,7 +50,8 @@ export function ConversationPreview({preview}: ConversationPreviewProps) {
     const {id, conversationType} = conversation;
     // const {} = conversationParticipants;
     return (
-        <Link href={`/${conversationType}/${id}`} asChild>
+        // <Link href={`/${conversationType}/${id}`} asChild>
+        <Link href={`/chat/${id}`} asChild>
             {/* <Pressable android_ripple={{color: 'rgba(255, 255, 255, .25)', radius: 50, foreground: true, borderless: false}}> */}
             {/* <Pressable android_ripple={{color: 'rgba(255, 255, 255, .25)', radius: 100, foreground: true, borderless: false}}> */}
             <Pressable android_ripple={{color: 'black', foreground: true, borderless: false}}>

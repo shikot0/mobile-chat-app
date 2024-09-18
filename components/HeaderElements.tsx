@@ -4,7 +4,7 @@ import { Text } from "./Themed"
 import AntDesign from "@expo/vector-icons/AntDesign"
 import Colors from "@/constants/Colors"
 import Ionicons from "@expo/vector-icons/Ionicons"
-import { useRouter } from "expo-router"
+import { Redirect, useRouter } from "expo-router"
 import { localUserStore } from "@/constants/globalState"
 import { useEffect, useState } from "react"
 
@@ -21,14 +21,14 @@ type ConversationParticipant = {
 }
 type GroupHeaderElementProps = {
     type?: HeaderElementTypes.Group,
-    users: ConversationParticipant[] | undefined,
+    users: ConversationParticipant[],
     // users: ConversationParticipant[],
     name?: string,
 }
 // type OneOnOneHeaderElementProps = {
 type OneOnOneHeaderElementProps = {
     type?: HeaderElementTypes.OneOnOne,
-    users: ConversationParticipant[] | undefined,
+    users: ConversationParticipant[],
     // users: ConversationParticipant[]
 }
 
@@ -202,6 +202,10 @@ function GroupHeaderElement({...props}: GroupHeaderElementProps) {
     function handleGoBack() {
         router.back();
     }
+
+    // if(!users) {
+    //     return <Redirect href={'..'} />
+    // }
     const router = useRouter();
     const colorScheme = useColorScheme() ?? 'dark';
 
@@ -250,22 +254,27 @@ function GroupHeaderElement({...props}: GroupHeaderElementProps) {
 function OneOnOneHeaderElement({...props}: OneOnOneHeaderElementProps) {
     const {users} = props;
     const router = useRouter();
-    const [recipient, setRecipient] = useState<ConversationParticipant>({
-        id: '',
-        phoneNumber: '',
-        profilePicture: '',
-        username: '',
-        email: ''
-    });
+    const {localUser} = localUserStore();
+    // const [recipient, setRecipient] = useState<ConversationParticipant>({
+    //     id: '',
+    //     phoneNumber: '',
+    //     profilePicture: '',
+    //     username: '',
+    //     email: ''
+    // });
+    const [recipient, setRecipient] = useState<ConversationParticipant>(users[0].id !== localUser?.id ? users[0] : users[1])
     function handleGoBack() {
         router.back();
     }
+    console.log({users})
+    // if(!users) {
+    //     return <Redirect href={'..'} />
+    // }
     // if(!users) {
     //     handleGoBack();
     //     return;
     // }
 
-    const {localUser} = localUserStore();
     // const recipient = users[0] !== localUser?.id ? users?[0] : users?[1];
     // let recipient: ConversationParticipant;
     // if(!users) {
@@ -280,11 +289,11 @@ function OneOnOneHeaderElement({...props}: OneOnOneHeaderElementProps) {
     //     recipient = users[0].id !== localUser?.id ? users[0] : users[1]
     // }
 
-    useEffect(() => {
-        if(users) {
-            setRecipient(users[0].id !== localUser?.id ? users[0] : users[1])
-        }
-    }, [])
+    // useEffect(() => {
+    //     if(users) {
+    //         setRecipient(users[0].id !== localUser?.id ? users[0] : users[1])
+    //     }
+    // }, [users])
     function getUserNames(users: ConversationParticipant[] | undefined, maxLength?: number) {
         if(!users) return 'Group';
 
