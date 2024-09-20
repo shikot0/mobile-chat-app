@@ -17,9 +17,10 @@ import { drizzle } from 'drizzle-orm/expo-sqlite';
 import { Redirect, Slot } from 'expo-router';
 import { storage } from '@/utils/mmkv';
 import { getLocalValue} from '@/utils/handleLocalData';
+import { db } from '@/drizzle/db';
 
-const expoDb = SQLite.openDatabaseSync('app.db');
-const db = drizzle(expoDb)
+// const expoDb = SQLite.openDatabaseSync('app.db');
+// const db = drizzle(expoDb)
 
 export {
   // Catch any errors thrown by the Layout component.

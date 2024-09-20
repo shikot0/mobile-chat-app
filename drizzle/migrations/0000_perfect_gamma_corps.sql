@@ -2,7 +2,7 @@ CREATE TABLE `conversation_participants` (
 	`id` text PRIMARY KEY NOT NULL,
 	`conversation_id` text NOT NULL,
 	`user_id` text NOT NULL,
-	`join_date` text,
+	`join_date` text NOT NULL,
 	FOREIGN KEY (`conversation_id`) REFERENCES `conversations`(`id`) ON UPDATE no action ON DELETE no action,
 	FOREIGN KEY (`user_id`) REFERENCES `users`(`id`) ON UPDATE no action ON DELETE no action
 );
@@ -15,23 +15,16 @@ CREATE TABLE `conversations` (
 	FOREIGN KEY (`created_by`) REFERENCES `users`(`id`) ON UPDATE no action ON DELETE no action
 );
 --> statement-breakpoint
-CREATE TABLE `media_messages` (
+CREATE TABLE `messages` (
 	`id` text PRIMARY KEY NOT NULL,
-	`media` text NOT NULL,
-	`conversation_id` text NOT NULL,
 	`text` text,
-	`created_at` text NOT NULL,
-	`updated_at` text NOT NULL,
-	FOREIGN KEY (`conversation_id`) REFERENCES `conversations`(`id`) ON UPDATE no action ON DELETE no action
-);
---> statement-breakpoint
-CREATE TABLE `text_messages` (
-	`id` text PRIMARY KEY NOT NULL,
-	`text` text NOT NULL,
 	`conversation_id` text NOT NULL,
+	`user_id` text NOT NULL,
+	`media` text,
 	`created_at` text NOT NULL,
 	`updated_at` text NOT NULL,
-	FOREIGN KEY (`conversation_id`) REFERENCES `conversations`(`id`) ON UPDATE no action ON DELETE no action
+	FOREIGN KEY (`conversation_id`) REFERENCES `conversations`(`id`) ON UPDATE no action ON DELETE no action,
+	FOREIGN KEY (`user_id`) REFERENCES `users`(`id`) ON UPDATE no action ON DELETE no action
 );
 --> statement-breakpoint
 CREATE TABLE `users` (

@@ -4,5 +4,5 @@ export default {
     schema: './drizzle/schema.ts',
     out: './drizzle/migrations',
     dialect: 'sqlite',
-    driver: 'expo'
+    driver: 'expo',
 } satisfies Config;

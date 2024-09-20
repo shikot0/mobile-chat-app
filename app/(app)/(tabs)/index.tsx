@@ -84,8 +84,14 @@ export default function ConversationsScreen() {
       //   }
       // }
       for(let i = 0; i < conversationsResult.length; i++) {
-        const [exists] = await db.select().from(conversationsSchema).where(eq(conversationsSchema.id, conversationsResult[i].conversation.id));
-        if(!exists) await db.insert(conversationsSchema).values(conversationsResult[i].conversation);
+        // const [exists] = await db.select().from(conversationsSchema).where(eq(conversationsSchema.id, conversationsResult[i].conversation.id));
+        // if(!exists) await db.insert(conversationsSchema).values(conversationsResult[i].conversation);
+        const [existingConversation] = await db.select().from(conversationsSchema).where(eq(conversationsSchema.id, conversationsResult[i].conversation.id));
+        if(existingConversation) {
+          await db.update(conversationsSchema).set(conversationsResult[i].conversation).where(eq(conversationsSchema.id, existingConversation.id));
+        }else {
+          await db.insert(conversationsSchema).values(conversationsResult[i].conversation);
+        }
       }
       const dbConversations = await db.select().from(conversationsSchema);
       // console.log({dbConversations})
