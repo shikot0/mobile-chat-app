@@ -1,27 +1,26 @@
 import FontAwesome from '@expo/vector-icons/FontAwesome';
 import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
 import { useFonts } from 'expo-font';
-// import { Stack } from 'expo-router';
-import { Stack } from 'expo-router/stack';
 import * as SplashScreen from 'expo-splash-screen';
 import { useState, useEffect, useCallback } from 'react';
-import * as SQLite from 'expo-sqlite';
+// import * as SQLite from 'expo-sqlite';
+// import migrations from '../drizzle/migrations/migrations';
 import migrations from '../drizzle/migrations/migrations';
-import { localUserStore } from '@/constants/globalState';
+import { localUserStore } from '@/constants/globalState'; 
 import { useColorScheme } from '@/components/useColorScheme';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
-// import { db } from '@/drizzle/db';
 import * as SecureStore from 'expo-secure-store';
 import {useMigrations} from 'drizzle-orm/expo-sqlite/migrator';
 import { drizzle } from 'drizzle-orm/expo-sqlite';
 import { Redirect, Slot } from 'expo-router';
-import { storage } from '@/utils/mmkv';
+// import { storage } from '@/utils/mmkv';
 import { getLocalValue} from '@/utils/handleLocalData';
-import { db } from '@/drizzle/db';
+import { openDatabaseSync } from 'expo-sqlite/next';
+// import { db } from '@/drizzle/db';
 
-// const expoDb = SQLite.openDatabaseSync('app.db');
-// const db = drizzle(expoDb)
-
+const expoDb = openDatabaseSync('app.db');
+const db = drizzle(expoDb)
+ 
 export {
   // Catch any errors thrown by the Layout component.
   ErrorBoundary,
@@ -29,7 +28,7 @@ export {
 
 // export const unstable_settings = {
 //   // Ensure that reloading on `/modal` keeps a back button present.
-//   initialRouteName: '(tabs)',
+//   initialRouteName: '(tabs)', 
 // };
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
@@ -43,7 +42,7 @@ export default function RootLayout() {
     OpenSans: require('../assets/fonts/Open-Sans.ttf'),
     ...FontAwesome.font,
   });
-  const {success, error: migrationError} = useMigrations(db, migrations);
+  // const {success, error: migrationError} = useMigrations(db, migrations);
   const {isLoggedIn, setIsLoggedIn, setIsLoading, isLoading, userToken, setUserToken, setLocalUser} = localUserStore();
 
 
@@ -61,9 +60,14 @@ export default function RootLayout() {
     if (fontsError) throw fontsError;
   }, [fontsError]);
 
-  useEffect(() => {
-    if(migrationError) throw migrationError
-  }, [migrationError])
+  // useEffect(() => {
+  //   if(migrationError) throw migrationError
+  // }, [migrationError])
+
+  // useEffect(() => {
+  //   const {success, error: migrationError} = useMigrations(db, migrations);
+  //   if(migrationError) throw migrationError
+  // }, [])
 
   async function authenticate() {
     try {
@@ -156,11 +160,16 @@ export default function RootLayout() {
   //   }
   // }, [fontsLoaded, success, isLoading]);
 
+  // useEffect(() => {
+  //   if (fontsLoaded && success && !isLoading) {
+  //     SplashScreen.hideAsync();
+  //   }
+  // }, [fontsLoaded, success, isLoading]);
   useEffect(() => {
-    if (fontsLoaded && success && !isLoading) {
+    if (fontsLoaded && !isLoading) {
       SplashScreen.hideAsync();
     }
-  }, [fontsLoaded, success, isLoading]);
+  }, [fontsLoaded, isLoading]);
       
   // const onLayoutRootView = useCallback(async () => {
   //   if (fontsLoaded && success && !isLoading) {
@@ -172,6 +181,8 @@ export default function RootLayout() {
   //     await SplashScreen.hideAsync();
   //   }
   // }, [fontsLoaded, success, isLoading]);
+
+  
 
   // if(isLoggedIn === false) {
   //   return <Redirect href="register" />

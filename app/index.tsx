@@ -1,11 +1,19 @@
 import {Text, View} from '@/components/Themed';
 import { localUserStore } from '@/constants/globalState';
+import migrations from '@/drizzle/migrations/migrations';
+import { drizzle } from 'drizzle-orm/expo-sqlite';
+import { useMigrations } from 'drizzle-orm/expo-sqlite/migrator';
 import { Redirect } from 'expo-router';
+import { openDatabaseSync } from 'expo-sqlite/next';
 import {StyleSheet} from 'react-native';
 
 
 export default function IndexPage() {
     const {isLoading, isLoggedIn} = localUserStore();
+    // const expoDb = openDatabaseSync('app.db');
+    // const db = drizzle(expoDb)
+    // const {success, error} = useMigrations(db, migrations);
+    // console.log({success})
     // console.log({isLoading, isLoggedIn})
 
     if(isLoading) {

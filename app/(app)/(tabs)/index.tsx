@@ -14,7 +14,7 @@ import { localUserStore } from '@/constants/globalState';
 import {conversations as conversationsSchema} from '@/drizzle/schema';
 import { db } from '@/drizzle/db';
 import { eq } from 'drizzle-orm';
-import { relative } from 'path';
+import AntDesign from '@expo/vector-icons/AntDesign';
 interface Conversation {
   id: string,
   conversationType: string,
@@ -142,7 +142,7 @@ export default function ConversationsScreen() {
           // style={styles.flatList}
           // refreshControl={{key: '1', props: {enabled: true, refreshing: true}, type: 'test'}}
           // contentContainerStyle={{paddingVertical: 48}}
-          contentContainerStyle={{paddingVertical: 20}}
+          // contentContainerStyle={{paddingVertical: 20}}
           estimatedItemSize={86}
           // refreshControl={}
           refreshControl={
@@ -154,7 +154,14 @@ export default function ConversationsScreen() {
               onRefresh={handleRefresh}
             />
           }
-          ListHeaderComponent={() => <ListHeading>Messages</ListHeading>}
+          ListHeaderComponent={() => {
+            return (
+              <View style={styles.listHeadingWrapper}>
+                <ListHeading>Messages</ListHeading>
+                <PrimaryButton circular link={"/new-chat"} icon={<AntDesign name='plus' size={16} color={Colors[colorScheme].primaryButtonText}/>}></PrimaryButton>
+              </View>
+            )
+          }}
           ListEmptyComponent={() => {
               if(isLoading) {
                 // return <ActivityIndicator style={styles.centeredActivityIndicator} size={50} color={Colors[colorScheme].primary}/>
@@ -230,6 +237,13 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 20,
     fontWeight: 'bold',
+  },
+  listHeadingWrapper: {
+    paddingHorizontal: 20,
+    paddingVertical: 24,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
   },
   listFooterWrapper: {
     flex: 1,

@@ -296,12 +296,13 @@ export function TextMessage({text, user}: TextMessageProps) {
         //     </View>
         // </Swipeable>
         <Animated.View   
-            entering={textEnteringAnim}          
+            // entering={textEnteringAnim}          
             style={[
                 styles.textMessageWrapper, 
                 {
                     // backgroundColor: user.id === localUser?.id ? 'rgba(0, 175, 200, .5)' : 'rgba(255, 255, 255, .75)',
-                    backgroundColor: user.id === localUser?.id ? 'rgba(0, 175, 200, .5)' : Colors[colorScheme].tint,
+                    // backgroundColor: user.id === localUser?.id ? 'rgba(0, 175, 200, .5)' : Colors[colorScheme].tint,
+                    backgroundColor: user.id === localUser?.id ? Colors[colorScheme].tint : 'rgba(0, 175, 200, .5)',
                     alignSelf: user.id === localUser?.id ? "flex-end": 'flex-start'
                 }
             ]}
@@ -309,7 +310,8 @@ export function TextMessage({text, user}: TextMessageProps) {
             <Text
                 style={
                     {
-                        color: localUser?.id === user.id ? 'white' : 'black'
+                        // color: localUser?.id === user.id ? 'white' : 'black'
+                        color: localUser?.id === user.id ? 'black' : 'white'
                     }
                 }
             >

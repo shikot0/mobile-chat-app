@@ -151,8 +151,12 @@ export type UserPreviewProps = {
         phone: string,
         profilePicture: string | null,
     },
-    toggleFunction?: Function,
-    isAlreadySelected?: boolean,
+    isSelected?: boolean,
+    // toggleFunction?: Function,
+    // addItemFunction?: Function,
+    // removeItemFunction?: Function,
+    // isAlreadySelected?: boolean,
+    toggleFunction?: Function
 }
 // export interface UserPreviewProps {
 //     preview: {
@@ -163,30 +167,53 @@ export type UserPreviewProps = {
 //     }
 // }
 
-export function UserPreview({preview, toggleFunction, isAlreadySelected}: UserPreviewProps) {
+// export function UserPreview({preview, toggleFunction, isAlreadySelected}: UserPreviewProps) {
+// export function UserPreview({preview, toggleFunction, isSelected}: UserPreviewProps) {
+// export function UserPreview({preview, addItemFunction, removeItemFunction, isSelected}: UserPreviewProps) {
+export function UserPreview({preview, toggleFunction, isSelected}: UserPreviewProps) {
     const {id, username, phone, profilePicture} = preview;
-    const [isSelected, setIsSelected] = useState<boolean>(isAlreadySelected ?? false)
+    console.log({isSelected})
+    // const [isSelected, setIsSelected] = useState<boolean>(isAlreadySelected ?? false);
+    const [currentlySelected, setCurrentlySelected] = useState(false);
     const colorScheme = useColorScheme() ?? 'dark';
 
+    // function handleToggle() {
+    //     setIsSelected(prev => !prev)
+    // }
     function handleToggle() {
-        setIsSelected(prev => !prev)
-    }   
-
-    useEffect(() => {
+        // if(!addItemFunction || !removeItemFunction) return;
+        // if(currentlySelected) {
+        //     removeItemFunction(id)
+        //     setCurrentlySelected(false);
+        // }else {
+        //     addItemFunction(id)
+        //     setCurrentlySelected(true);
+        // }
+        // toggleFunction(id, isSelected ? 'remove' : 'add')
+        // setCurrentlySelected(toggleFunction(id, currentlySelected ? 'remove' : 'add'));
         if(!toggleFunction) return;
+        toggleFunction(id)
+    }
+
+    // useEffect(() => {
+    //     // console.log({toggleFunction})
+    //     if(!toggleFunction) return;
         
-        if(isSelected) {
-            toggleFunction(id, 'add')
-        }else {
-            toggleFunction(id, 'remove')
-        }
-    }, [isSelected])
+    //     if(isSelected) {
+    //         console.log('adding')
+    //         toggleFunction(id, 'add')
+    //     }else {
+    //         console.log('removing')
+    //         toggleFunction(id, 'remove')
+    //     }
+    // }, [isSelected])
     return (
         <Pressable 
             onPress={() => handleToggle()}
             android_ripple={{color: 'black', foreground: true, borderless: false}}
         >
             {/* <View style={[styles.userPreview, {backgroundColor: Colors[colorScheme].elevated}]}> */}
+            {/* <View style={[styles.userPreview, {backgroundColor: isSelected ? Colors[colorScheme].primary : Colors[colorScheme].elevated}]}> */}
             <View style={[styles.userPreview, {backgroundColor: isSelected ? Colors[colorScheme].primary : Colors[colorScheme].elevated}]}>
                 {/* <View style={styles.profilePictureWrapper}>
                     <Image style={styles.profilePicture} source={require('../assets/images/favicon.png')} resizeMode="cover"/>
@@ -197,7 +224,7 @@ export function UserPreview({preview, toggleFunction, isAlreadySelected}: UserPr
 
                 {/* <LinearGradient style={{position: 'absolute', width: '100%', height: '100%', zIndex: 0}} colors={isSelected ? [Colors[colorScheme].elevated, Colors[colorScheme].primary] : [Colors[colorScheme].elevated, Colors[colorScheme].elevated]}/> */}
                 <View style={styles.profilePictureWrapper}>
-                    <Image style={styles.profilePicture} source={require('../assets/images/favicon.png')} resizeMode="cover"/>
+                    <Image style={styles.profilePicture} source={require('../assets/images/person.png')} resizeMode="cover"/>
                 </View>
                 {/* <View style={[styles.userInfoWrapper, {backgroundColor: Colors[colorScheme].elevated}]}> */}
                 <View style={[styles.userInfoWrapper]}>

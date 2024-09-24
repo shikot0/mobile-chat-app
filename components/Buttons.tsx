@@ -10,6 +10,7 @@ interface PrimaryButtonProps extends TextProps {
     icon?: React.JSX.Element,
     link?: Href<string>,
     isLoading?: boolean,
+    circular?: boolean,
     disabled?: boolean,
     full?: boolean
 }
@@ -19,7 +20,7 @@ function handleCallback(callback?: Function) {
     callback();
 }
 
-export function PrimaryButton({callback, icon, style, link, children, isLoading, disabled, full}: PrimaryButtonProps) {
+export function PrimaryButton({callback, icon, style, link, children, circular, isLoading, disabled, full}: PrimaryButtonProps) {
     const theme = useColorScheme() ?? 'dark';
     return (
         // <Pressable
@@ -63,6 +64,7 @@ export function PrimaryButton({callback, icon, style, link, children, isLoading,
                             {
                                 width: full ? '100%' : 'auto',
                                 paddingVertical: full ? 10 : 8,
+                                aspectRatio: circular ? 1/1 : undefined,
                                 // backgroundColor: Colors[theme].primary
                                 backgroundColor: disabled ? Colors[theme].elevated : Colors[theme].primary
                             },
@@ -87,18 +89,20 @@ export function PrimaryButton({callback, icon, style, link, children, isLoading,
                     >
                         {!isLoading ? 
                             <>
-                                <Text 
-                                    style={
-                                        [
-                                            styles.primaryButtonText,
-                                            {
-                                                color: Colors[theme].primaryButtonText
-                                            }
-                                        ]
-                                    }
-                                >
-                                    {children}
-                                </Text>
+                                {children ?
+                                    <Text 
+                                        style={
+                                            [
+                                                styles.primaryButtonText,
+                                                {
+                                                    color: Colors[theme].primaryButtonText
+                                                }
+                                            ]
+                                        }
+                                    >
+                                        {children}
+                                    </Text>
+                                : null}
                                 {icon ? icon : null}
                             </>
                         : <ActivityIndicator size={22} color={Colors[theme].primaryButtonText}/>}
@@ -115,6 +119,7 @@ export function PrimaryButton({callback, icon, style, link, children, isLoading,
                             {
                                 width: full ? '100%' : 'auto',
                                 paddingVertical: full ? 10 : 8,
+                                aspectRatio: circular ? 1/1 : undefined,
                                 // backgroundColor: Colors[theme].primary
                                 backgroundColor: disabled ? Colors[theme].elevated : Colors[theme].primary
                             },
@@ -124,18 +129,20 @@ export function PrimaryButton({callback, icon, style, link, children, isLoading,
                 >
                     {!isLoading ? 
                         <>
-                            <Text 
-                                style={
-                                    [
-                                        styles.primaryButtonText,
-                                        {
-                                            color: Colors[theme].primaryButtonText,
-                                        }
-                                    ]
-                                }
-                            >
-                                {children}
-                            </Text>
+                            {children ?
+                                <Text 
+                                    style={
+                                        [
+                                            styles.primaryButtonText,
+                                            {
+                                                color: Colors[theme].primaryButtonText,
+                                            }
+                                        ]
+                                    }
+                                >
+                                    {children}
+                                </Text>
+                            : null}
                             {icon ? icon : null}
                         </>
                     : <ActivityIndicator size={22} color={Colors[theme].primaryButtonText}/>}

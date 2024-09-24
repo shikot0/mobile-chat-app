@@ -129,6 +129,7 @@ export default function ChatPage() {
     useEffect(() => {
         // console.log({lastMessage})
         if(lastMessage) {
+            // console.log({lastMessage})
             const data = JSON.parse(lastMessage.data);
             // const data = lastMessage.data;
             // console.log({data})

@@ -175,11 +175,11 @@ export function HeaderElement({...props}: HeaderElementProps) {
 function GroupHeaderElement({...props}: GroupHeaderElementProps) {
     const {name, users} = props;
     const {localUser} = localUserStore();
-    function getUserNames(users: ConversationParticipant[] | undefined, maxLength?: number) {
+    function getUserNames(users: ConversationParticipant[] | undefined, numOfUsers?: number, maxLength?: number) {
         if(!users) return 'Group';
 
 
-        const usernames = users.reduce<string[]>((acc, user) => {
+        let usernames = users.reduce<string[]>((acc, user) => {
             // if(user.id === localUser?.id) {
             //     acc.push('You');
             // }else{
@@ -191,7 +191,11 @@ function GroupHeaderElement({...props}: GroupHeaderElementProps) {
             return acc;
         }, []);
         usernames.unshift('You');
+        usernames = usernames.slice(0, numOfUsers ? numOfUsers : usernames.length-1);
         const text = usernames.join(', ');
+        if(numOfUsers && numOfUsers < users.length) {
+            return `${text} + ${users.length-numOfUsers === 1 ? '1 other' : `${users.length-numOfUsers} others`}`
+        }
         if(maxLength && maxLength < text.length) {
             return `${text.slice(0, maxLength+1)}...`
         }else {
@@ -241,12 +245,12 @@ function GroupHeaderElement({...props}: GroupHeaderElementProps) {
                             />
                         )
                     })}
-                    {users.length > 3 ?
-                        <Text>{`+${users.length-3}`}</Text>
-                    : null}
+                    {/* {users.length > 3 ?
+                        <Text>{`+${users.length-3} ${(users.length-3) === 1 ? 'other' : 'others'}`}</Text>
+                    : null} */}
                 </View>
             : null}
-            <Text>{name || getUserNames(users)}</Text>
+            <Text>{name || getUserNames(users, 3)}</Text>
         </View>
     )
 }

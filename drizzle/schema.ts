@@ -1,5 +1,4 @@
-import {ExpoSQLiteDatabase} from 'drizzle-orm/expo-sqlite'
-import {sqliteTable, text, SQLiteTimestamp , unique, blob, uniqueIndex, primaryKey} from 'drizzle-orm/sqlite-core';
+import {sqliteTable, text} from 'drizzle-orm/sqlite-core';
 // import {} from 'drizzle-orm/sqlite-core';
 
 export const users = sqliteTable('users', {

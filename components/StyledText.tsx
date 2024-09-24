@@ -40,9 +40,9 @@ export function ListHeading(props: TextProps) {
     <Text 
       {...props} 
       style={[props.style, {
-        paddingLeft: 16,
-        paddingVertical: 12,
-        marginBottom: 16,
+        // paddingLeft: 16,
+        // paddingVertical: 12,
+        // marginBottom: 16,
         fontSize: 40,
         fontWeight: '500',
         // backgroundColor: 'grey',
