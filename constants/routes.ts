@@ -4,4 +4,5 @@
 // export const serverRoute = 'http://172.23.128.1:3000';
 // export const serverRoute = 'http://192.168.151.44:3000';
 // export const serverRoute = 'http://192.168.153.44:3000';
-export const serverRoute = 'http://192.168.12.44:3000';
+// export const serverRoute = 'http://192.168.47.44:3000';
+export const serverRoute = 'http://192.168.2.241:3000';

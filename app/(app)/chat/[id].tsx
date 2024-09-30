@@ -18,6 +18,7 @@ import { localUserStore } from "@/constants/globalState";
 import useWebSocket, { ReadyState } from 'react-use-websocket';
 import { HeaderElement, HeaderElementTypes } from "@/components/HeaderElements";
 import { StatusBar } from "expo-status-bar";
+import React from "react";
 
 // interface ChatPageProps {
 //     params: {
@@ -48,13 +49,58 @@ type ConversationInfo = {
     createdBy: string,
     users: ConversationParticipant[]
 }
+type MessageUser = {
+    id: string,
+    username: string,
+    email: string,
+    phone: string,
+    profilePicture: string | null,
+    createdAt: string,
+}
+type Message = {
+    id: string,
+    media: null | string[],
+    text: string,
+    userId: string
+    conversationId: string,
+    createdAt: string,
+    updatedAt: string,
+}
+
+type ReceivedMessage = {
+    // message: {
+    //     id: string,
+    //     media: null | string[],
+    //     text: string,
+    //     userId: string
+    //     conversationId: string,
+    //     createdAt: string,
+    //     updatedAt: string,
+    // },
+    // user: {
+    //     id: string,
+    //     username: string,
+    //     email: string,
+    //     phone: string,
+    //     profilePicture: string | null,
+    //     createdAt: string,
+    // }
+    message: Message,
+    user: MessageUser
+}
+type GroupedMessage = {
+    user: MessageUser,
+    messages: Message[]
+}
 
 // export default function ChatPage({params: {type, id}}: ChatPageProps) {
 export default function ChatPage() {
     const {id} = useLocalSearchParams<{id: string, chatType: string}>();
-    console.log({id})
+    // console.log({id})
     const [newMessage, setNewMessage] = useState<string>('');
-    const [messages, setMessages] = useState<any[]>([]);
+    // const [messages, setMessages] = useState<any[]>([]);
+    // const [messages, setMessages] = useState<ReceivedMessage[]>([]);
+    const [messages, setMessages] = useState<GroupedMessage[]>([]);
     const [conversationInfo, setConversationInfo] = useState<ConversationInfo>();
     const [isLoading, setIsLoading] = useState<boolean>(true);
     const {localUser, userToken} = localUserStore();
@@ -113,6 +159,7 @@ export default function ChatPage() {
                         
     // let flatListRef: FlatList<any> | null = null;
     let flashListRef: FlashList<any> | null = null;
+    
     const {sendMessage, readyState, lastMessage} = useWebSocket(`${serverRoute}/messages/conversations/${id}`, {
         queryParams: {
             'userToken': `${userToken}`
@@ -126,6 +173,49 @@ export default function ChatPage() {
     //     console.log({readyState})
     // }, [readyState])
 
+    function groupMessages(messages: ReceivedMessage[]) {
+        // const groupedMessages = messages.reduce<Message[][]>((acc, item) => {
+        //     if(acc.length === 0) {
+        //         acc.push([item]);
+        //         continue;
+        //     }
+
+
+        //     return acc;
+        // }, [])
+        const groupedMessages: GroupedMessage[] = [];
+        // if(messages.length === 0) return messages;
+        if(messages.length === 0) return groupedMessages;
+
+        // const groupedMessages: Message[][] = [];
+        // const groupedMessages: {user: MessageUser, messages: Message[]}[] = [];
+        // const groupedMessages: GroupedMessage[] = [];
+        for(let i = 0; i < messages.length; i++) {
+            if(!groupedMessages.length) {
+                // groupedMessages.push(messages[i])
+                groupedMessages.push({user: messages[i].user, messages: [messages[i].message]});
+                continue;
+            }
+
+            // const lastUser = groupedMessages[groupedMessages.length-1][0].user;
+            // if(messages[i].user.id === lastUser.id) {
+            //     groupedMessages[groupedMessages.length-1].push(messages[i])
+            // }else {
+            //     groupedMessages.push([messages[i]])
+            // }
+            const lastUser = groupedMessages[groupedMessages.length-1].user;
+            if(messages[i].user.id === lastUser.id) {
+                groupedMessages[groupedMessages.length-1].messages.push(messages[i].message)
+            }else {
+                groupedMessages.push({user: messages[i].user, messages: [messages[i].message]})
+            }
+        }
+
+        return groupedMessages;
+    }
+
+
+
     useEffect(() => {
         // console.log({lastMessage})
         if(lastMessage) {
@@ -135,9 +225,38 @@ export default function ChatPage() {
             // console.log({data})
             // console.log({messages})
             // setMessages(prev => [...prev, data])
-            setMessages(prev => prev.concat(data));
+            // setMessages(prev => prev.concat(data));
+
+            setMessages(prev => {
+                if(!prev.length) {
+                    // groupedMessages.push(messages[i])
+                    // prev.push({user: data.user, messages: [data.message]});
+                    // prev.concat({user: data.user, messages: [data.message]});
+                    const copy = prev.concat({user: data.user, messages: [data.message]})
+                    return copy;
+                }
+    
+                // const lastUser = groupedMessages[groupedMessages.length-1][0].user;
+                // if(messages[i].user.id === lastUser.id) {
+                //     groupedMessages[groupedMessages.length-1].push(messages[i])
+                // }else {
+                //     groupedMessages.push([messages[i]])
+                // }
+                const lastUser = prev[prev.length-1].user;
+                let copy = [...prev];
+                if(data.user.id === lastUser.id) {
+                    // prev[prev.length-1].messages.push(data.message)
+                    // prev[prev.length-1].messages.push(data.message)
+                    copy[copy.length-1].messages.push(data.message)
+                }else {
+                    // prev.push({user: data.user, messages: [data.message]})
+                    // prev.concat({user: data.user, messages: [data.message]})
+                    copy = copy.concat({user: data.user, messages: [data.message]})
+                }
+                return copy;
+            });
             // autoScroll(flashListRef, flashListRef?.scrollToEnd)
-            flashListRef?.scrollToEnd({animated: true})
+            // flashListRef?.scrollToEnd({animated: true})
         }
     }, [lastMessage])
 
@@ -147,7 +266,10 @@ export default function ChatPage() {
             const body = await response.json();
             // console.log({body})
             // console.log(body?.result)
-            if(body.succeeded) setMessages(body?.result)
+            // console.log({result: body?.result[0]})
+
+            // if(body.succeeded) setMessages(body?.result)
+            if(body.succeeded) setMessages(groupMessages(body?.result))
         } catch(error) {
             console.log(`Error collecting messages for the conversation: ${error}`)
         }
@@ -159,7 +281,7 @@ export default function ChatPage() {
             const body = await response.json();
             if(body.succeeded) {
                 const {conversation, conversationParticipants} = body.result;
-                console.log({conversation, conversationParticipants})
+                // console.log({conversation, conversationParticipants})
                 // console.log({result: body.result})
                 const reducedParticipants = conversationParticipants.reduce((acc: ConversationParticipant[], item: ConversationParticipant) => {
                     // const {id, username, phoneNumber, email} = item;
@@ -175,6 +297,8 @@ export default function ChatPage() {
             console.log(`Error collecting conversation info: ${error}`)
         }
     }
+
+
     
     async function loadChat() {
         setIsLoading(true);
@@ -183,21 +307,15 @@ export default function ChatPage() {
         setIsLoading(false);
     }
 
+    useEffect(() => {
+        loadChat();
+    }, [])
     // useEffect(() => {
     //     getMessages();
     //     getConversationData();
     // }, [])
-    useEffect(() => {
-        loadChat();
-    }, [])
 
-    if(isLoading) {
-        return <ActivityIndicator size={50} style={{position: 'absolute', top: '50%', left: '50%', transform: [{translateX: -25}, {translateY: -25}]}} color={Colors[colorScheme].primary} />
-    }
 
-    if(!conversationInfo) {
-        return <Redirect href={'..'} />
-    }
     // if(!conversationInfo) {
     //     return <Redirect href={'..'} />
     // }
@@ -278,71 +396,16 @@ export default function ChatPage() {
             console.log(`Error sending message: ${error}`)
         }
     }
+ 
+    // useEffect(() => {
+    //     console.log({messages})
+    //     // console.log({groupedMessages: groupMessages(messages)})
+    //     // console.log({groupedMessages: JSON.stringify(groupMessages(messages))})
+    // }, [messages])
 
-    const animationDuration = 100;
-    const textEnteringAnim = (values: {targetOriginY: number; targetOriginX: number}) => {
-        "worklet";
+    if(isLoading) return <ActivityIndicator size={50} style={{position: 'absolute', top: '50%', left: '50%', transform: [{translateX: -25}, {translateY: -25}]}} color={Colors[colorScheme].primary} />
 
-        const animations = {
-            // originY: withTiming(values.targetOriginY, {
-            //     duration: animationDuration,
-            //     easing: Easing.elastic(1)
-            // }),
-
-            // originX: withTiming(values.targetOriginX, {
-            //     duration: animationDuration,
-            //     easing: Easing.elastic(1)
-            // }),
-            // originX: withSpring(values.targetOriginX, {
-            //     duration: animationDuration,
-            //     // easing: Easing.elastic(1)
-            // }),
-            opacity: withTiming(1, {
-                duration: animationDuration
-            }),
-            // scaleX: withSpring(1, {
-            //     stiffness: 0,
-            //     duration: animationDuration
-            // }),
-            // scaleY: withSpring(1, {
-            //     stiffness: 0,
-            //     duration: animationDuration
-            // })
-            originX: withTiming(values.targetOriginX, {
-                duration: animationDuration/2,
-                easing: Easing.elastic(1)
-            }),
-            scaleX: withTiming(1, {
-                duration: animationDuration,
-                easing: Easing.elastic(2),
-                // easing: Easing.linear
-            }),
-            scaleY: withTiming(1, {
-                duration: animationDuration,
-                easing: Easing.elastic(2),
-                // easing: Easing.linear
-            })
-        };
-        const initialValues = {
-            // originY: height,
-            originX: width + 50,
-            scaleX: .75,
-            scaleY: .75,
-            opacity: .5,
-        }
-
-        // playSound()
-        // const playSound = new Audio.Sound()
-        // await playSound.loadAsync(require('../../assets/sounds/new-message.m4a'));
-        // await playSound.playAsync()       
-        
-        
-        return {
-            initialValues,
-            animations
-        }
-    }
-
+    if(!conversationInfo) return <Redirect href={'..'} />
 
     return (
         <View style={styles.container}>
@@ -398,8 +461,44 @@ export default function ChatPage() {
                     initialScrollIndex={messages.length-1}
                     estimatedItemSize={91}
                     renderItem={({item, index}) => {
+                        const {user, messages} = item;
                         return (
-                            <MessageHandler message={item.message} user={item.user}/>
+                            // <MessageHandler message={item.message} user={item.user}/>
+                            // {messages.map((message) => {
+                            //     return <MessageHandler message={message} user={item.user}/>
+                            // })}
+                            <>
+                                {messages.map((message, index) => {
+                                    return <MessageHandler key={index.toString()} message={message} user={item.user}/>
+                                })}
+
+                                {user.id !== localUser?.id && conversationInfo?.type !== 'one-to-one'? 
+                                    <View style={styles.messageSenderInfoWrapper}>
+                                        <Image
+                                            source={require('../../../assets/images/person.png')}
+                                            style={{
+                                                width: 12,
+                                                height: 12,
+                                                borderRadius: 48,
+                                                // transform: [
+                                                //     {translateX: -6},
+                                                //     {translateY: -8}
+                                                // ]
+                                            }}
+                                        />
+                                        <Text style={{
+                                            fontSize: 8,
+                                            // transform: [
+                                            //     {translateX: -6},
+                                            //     {translateY: -4}
+                                            // ]
+                                        }}
+                                        >
+                                            {user.username}
+                                        </Text> 
+                                    </View>
+                                : null}
+                            </>
                         )
                     }}
                 />
@@ -417,7 +516,7 @@ export default function ChatPage() {
                 updateFunction={setNewMessage}
                 submitFunction={addNewMessage}
                 submitDisabled={newMessage.length === 0}
-                style={styles.messageInputWrapper}
+                // style={styles.messageInputWrapper}
             />
         </View>
     )
@@ -445,6 +544,15 @@ const styles = StyleSheet.create({
         left: 0,
         right: 0,
         height: '100%'
+    },
+    messageSenderInfoWrapper: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'flex-start',
+        gap: 4,
+        // alignItems: 'flex-start',
+        // gap: 2,
+        marginBottom: 16,
     },
     messagesWrapper: {
         // flex: 1,
@@ -482,30 +590,30 @@ const styles = StyleSheet.create({
         width: '100%',
         height: '100%'
     },
-    messageInputWrapper: {
-        position: 'relative',
-        // width: '100%',
-        // flex: 1,
-        // flexDirection: 'row',
-        // alignItems: 'center',
-        // height: '100%',
-        // flex: 1,
-        height: 58,
-        flexDirection: 'row',
-        alignItems: 'center',
-        // justifyContent: 'center',
-        justifyContent: 'space-between',
-        paddingVertical: 8,
-        // backgroundColor: 'transparent',
-        // paddingHorizontal: 8,
-        paddingHorizontal: 12,
-        gap: 8,
-        // gap: 0,
+    // messageInputWrapper: {
+    //     position: 'relative',
+    //     // width: '100%',
+    //     // flex: 1,
+    //     // flexDirection: 'row',
+    //     // alignItems: 'center',
+    //     // height: '100%',
+    //     // flex: 1,
+    //     height: 58,
+    //     flexDirection: 'row',
+    //     alignItems: 'center',
+    //     // justifyContent: 'center',
+    //     justifyContent: 'space-between',
+    //     paddingVertical: 8,
+    //     // backgroundColor: 'transparent',
+    //     // paddingHorizontal: 8,
+    //     paddingHorizontal: 12,
+    //     gap: 8,
+    //     // gap: 0,
 
-        // borderWidth: 1,
-        // borderColor: 'blue',
-        // borderStyle: 'solid'
-    },
+    //     // borderWidth: 1,
+    //     // borderColor: 'blue',
+    //     // borderStyle: 'solid'
+    // },
     textInput: {
         // width: '100%',
         paddingHorizontal: 12,

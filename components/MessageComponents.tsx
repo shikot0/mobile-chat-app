@@ -33,7 +33,7 @@ type MessageHandlerProps = {
 
 type MessageTypeProps = {
     text?: string,
-    media?: string[],
+    media: string[] | null,
     // timeSent?: string,
     // timeReceived?: string,
 } 
